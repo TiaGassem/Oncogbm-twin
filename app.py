@@ -289,7 +289,6 @@ BENCHMARK_DRUGS = {
     "Custom SMILES Input": "",
 }
 
-# Standardized ProTox-3 Toxicity Endpoint Benchmark Dataset
 PROTOX_BENCHMARKS = {
     "CN1C(=O)N2C=NC(=C2N=N1)C(=O)N": {  # Temozolomide
         "ld50": 850.0,
@@ -341,7 +340,6 @@ PROTOX_BENCHMARKS = {
     },
 }
 
-# Default profile for unknown/custom compounds
 DEFAULT_PROTOX = {
     "ld50": 650.0,
     "ghs": 4,
@@ -1153,7 +1151,6 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
         unsafe_allow_html=True,
     )
 
-    # Determine ProTox profile deterministically based on SMILES input
     protox_profile = PROTOX_BENCHMARKS.get(quick_smiles, DEFAULT_PROTOX)
     ld50_val = protox_profile["ld50"]
     ghs_res = classify_ghs_acute_toxicity(ld50_val)
@@ -1199,10 +1196,10 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
                     else "Low / Borderline Confidence"
                 )
             )
-            color_badge = "#DC2626" if status_str == "Active" else "#0284C7"
+            # Use Native Streamlit Markdown Color Badges to prevent HTML unrendered tags
+            color_badge = ":red[Active]" if status_str == "Active" else ":blue[Inactive]"
             st.markdown(
-                f"- **{ep_name}:** `<span style='color:{color_badge}; font-weight:700;'>{status_str}</span>` (Probability: **{prob_val:.2f}** | {conf_rating})",
-                unsafe_allow_html=True,
+                f"- **{ep_name}:** {color_badge} (Probability: **{prob_val:.2f}** | {conf_rating})"
             )
             eval_records.append({
                 "Endpoint": ep_name,
