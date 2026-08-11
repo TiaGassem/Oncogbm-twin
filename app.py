@@ -9,89 +9,172 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # ==============================================================================
-# 1. ACADEMIC UX/UI DESIGN SYSTEM & STYLING
+# 1. ACADEMIC ENTERPRISE DESIGN SYSTEM (CSS)
 # ==============================================================================
 st.set_page_config(
-    page_title="GBM-Twin | International Oncology Suite",
+    page_title="GBM-Twin | Glioblastoma Oncology Platform",
     layout="wide",
-    page_icon="🧬",
     initial_sidebar_state="expanded"
 )
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    html, body, [class*="css"] { font-family: 'Inter', sans-serif; color: #0F172A; }
-    .stApp { background-color: #F8FAFC; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    .brand-header {
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-        padding: 2rem 2.5rem;
-        border-radius: 12px;
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #0F172A;
+    }
+    
+    .stApp {
+        background-color: #F8FAFC;
+    }
+    
+    /* Academic Banner Header */
+    .banner-header {
+        background-color: #0F172A;
+        border-bottom: 3px solid #0284C7;
+        padding: 1.5rem 2rem;
+        border-radius: 4px;
         color: #FFFFFF;
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
-        border: 1px solid #334155;
     }
-    .brand-title { font-size: 2.2rem; font-weight: 700; color: #F8FAFC; }
-    .brand-subtitle { font-size: 0.95rem; color: #94A3B8; margin-top: 0.4rem; }
-    .badge-tag {
-        background: #0284C7; color: #FFFFFF; font-size: 0.75rem; 
-        font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px;
-        text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .section-header {
-        font-size: 1.25rem; font-weight: 600; color: #0F172A;
-        border-bottom: 2px solid #E2E8F0; padding-bottom: 0.4rem;
-        margin-top: 1rem; margin-bottom: 1rem;
-    }
-    .stTabs [data-baseweb="tab-list"] { gap: 6px; background-color: #E2E8F0; padding: 5px; border-radius: 8px; }
-    .stTabs [data-baseweb="tab"] { height: 40px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: #475569; }
-    .stTabs [aria-selected="true"] { background-color: #FFFFFF !important; color: #0284C7 !important; }
     
-    .tool-card {
-        background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px;
-        padding: 1rem; margin-bottom: 0.8rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    .banner-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #F8FAFC;
+        margin: 0;
+    }
+    
+    .banner-subtitle {
+        font-size: 0.875rem;
+        color: #94A3B8;
+        margin-top: 0.35rem;
+        font-weight: 400;
+    }
+
+    .status-badge {
+        display: inline-block;
+        background-color: #1E293B;
+        color: #38BDF8;
+        border: 1px solid #334155;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0F172A;
+        border-bottom: 1px solid #E2E8F0;
+        padding-bottom: 0.4rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+    }
+    
+    /* Academic Data Cards */
+    .data-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 4px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .data-card-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .data-card-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #0F172A;
+        margin-top: 0.2rem;
+    }
+    
+    .code-mono {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.825rem;
+        background-color: #F1F5F9;
+        color: #0F172A;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        border: 1px solid #E2E8F0;
+    }
+
+    /* Tab Layout Tweaks */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2px;
+        background-color: #F1F5F9;
+        padding: 3px;
+        border-radius: 4px;
+        border: 1px solid #E2E8F0;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 38px;
+        border-radius: 3px;
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: #475569;
+        padding: 0 16px;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #FFFFFF !important;
+        color: #0369A1 !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 2. BRAND HEADER & RESEARCH DISCLAIMER
+# 2. BRAND HEADER & RESEARCH NOTICE
 # ==============================================================================
 st.markdown("""
-<div class="brand-header">
-    <span class="badge-tag">Multi-Database Oncology Suite v4.0</span>
-    <div class="brand-title">🧬 GBM-Twin: Integrated Glioblastoma Research Workstation</div>
-    <div class="brand-subtitle">
-        An international platform integrating NCBI PubChem, STRING-DB, GEPIA 2, R2 Genomics, Broad DepMap, 
-        UniProtKB, TCGA cBioPortal, RCSB PDB, ChEMBL, and PubMed E-Utilities.
+<div class="banner-header">
+    <span class="status-badge">GBM-TWIN PLATFORM v5.2 | TRANSLATIONAL RESEARCH SUITE</span>
+    <div class="banner-title">Glioblastoma Precision Oncology & In Silico Discovery Workbench</div>
+    <div class="banner-subtitle">
+        Integrates public multi-omic repositories (UniProt, TCGA cBioPortal, RCSB PDB, ChEMBL, STRING-DB, PubChem) 
+        with 3Dmol.js biophysics and non-linear 4PL dose-response analytics.
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-st.warning("🔬 **ACADEMIC & TRANSLATIONAL RESEARCH PLATFORM.** Utilizes live REST APIs and open-access scientific repositories for Glioblastoma Multiforme target discovery and drug design.")
+st.caption("RESEARCH USE ONLY. Designed for student thesis work, multi-omic exploration, and target bioactivity screening in Glioblastoma Multiforme.")
 
 # ==============================================================================
 # 3. VERIFIED TARGET DATABASE
 # ==============================================================================
 GBM_TARGETS = {
-    "CDC25A": {"uniprot": "P30304", "gene": "CDC25A", "pdb": "1C25", "chembl": "CHEMBL4105", "ncbi_id": "993", "type": "Cell Cycle Phosphatase (G1/S Driver)"},
-    "CDC25B": {"uniprot": "P30305", "gene": "CDC25B", "pdb": "1QB0", "chembl": "CHEMBL2528", "ncbi_id": "994", "type": "Cell Cycle Phosphatase (G2/M Driver)"},
-    "EGFR":   {"uniprot": "P00533", "gene": "EGFR",   "pdb": "1M17", "chembl": "CHEMBL203",  "ncbi_id": "1956", "type": "Receptor Tyrosine Kinase (vIII Driver)"},
-    "PTEN":   {"uniprot": "P60484", "gene": "PTEN",   "pdb": "1D5R", "chembl": "CHEMBL2835", "ncbi_id": "5728", "type": "Dual Phosphatase (PI3K Suppressor)"},
-    "TP53":   {"uniprot": "P04637", "gene": "TP53",   "pdb": "1TUP", "chembl": "CHEMBL362",  "ncbi_id": "7157", "type": "Tumor Suppressor (Genome Guardian)"},
-    "IDH1":   {"uniprot": "O75874", "gene": "IDH1",   "pdb": "319N", "chembl": "CHEMBL1938", "ncbi_id": "3417", "type": "Isocitrate Dehydrogenase (R132H Oncometabolite)"},
-    "MGMT":   {"uniprot": "P16455", "gene": "MGMT",   "pdb": "1QNT", "chembl": "CHEMBL3717", "ncbi_id": "4255", "type": "DNA Repair Enzyme (TMZ Resistance)"}
+    "CDC25A": {"uniprot": "P30304", "gene": "CDC25A", "pdb": "1C25", "chembl": "CHEMBL4105", "type": "Cell Cycle Phosphatase (G1/S Driver)"},
+    "CDC25B": {"uniprot": "P30305", "gene": "CDC25B", "pdb": "1QB0", "chembl": "CHEMBL2528", "type": "Cell Cycle Phosphatase (G2/M Driver)"},
+    "EGFR":   {"uniprot": "P00533", "gene": "EGFR",   "pdb": "1M17", "chembl": "CHEMBL203",  "type": "Receptor Tyrosine Kinase (vIII Variant)"},
+    "PTEN":   {"uniprot": "P60484", "gene": "PTEN",   "pdb": "1D5R", "chembl": "CHEMBL2835", "type": "Dual Phosphatase (PI3K Suppressor)"},
+    "TP53":   {"uniprot": "P04637", "gene": "TP53",   "pdb": "1TUP", "chembl": "CHEMBL362",  "type": "Tumor Suppressor (Genome Guardian)"},
+    "IDH1":   {"uniprot": "O75874", "gene": "IDH1",   "pdb": "319N", "chembl": "CHEMBL1938", "type": "Isocitrate Dehydrogenase (R132H Variant)"},
+    "MGMT":   {"uniprot": "P16455", "gene": "MGMT",   "pdb": "1QNT", "chembl": "CHEMBL3717", "type": "DNA Repair Enzyme (TMZ Resistance Sentinel)"}
 }
 
 # ==============================================================================
-# 4. LIVE REST API FETCHERS (NCBI PubChem, STRING-DB, UniProt, cBioPortal)
+# 4. LIVE REST API FETCHERS
 # ==============================================================================
-
 @st.cache_data(ttl=86400)
 def fetch_pubchem_compound(compound_name: str) -> dict:
-    """Fetches real chemical descriptors and structure image from NCBI PubChem REST API."""
     url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{compound_name}/property/IUPACName,MolecularWeight,CanonicalSMILES,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount/JSON"
     img_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{compound_name}/PNG?image_size=300x300"
     try:
@@ -103,11 +186,10 @@ def fetch_pubchem_compound(compound_name: str) -> dict:
             return prop
     except Exception:
         pass
-    return {"status": "error", "message": f"Compound '{compound_name}' not resolved in PubChem DB."}
+    return {"status": "error", "message": f"Compound '{compound_name}' not resolved in PubChem database."}
 
 @st.cache_data(ttl=86400)
 def fetch_string_db_network(gene_symbol: str) -> list:
-    """Fetches functional protein partners from STRING-DB API."""
     url = f"https://string-db.org/api/json/network?identifiers={gene_symbol}&species=9606&limit=6"
     try:
         res = requests.get(url, timeout=10)
@@ -151,47 +233,25 @@ def fetch_cbioportal_gbm_mutations(gene_symbol: str) -> dict:
     except Exception:
         return {"status": "error"}
 
-@st.cache_data(ttl=86400)
-def fetch_pubmed_literature(gene_symbol: str) -> list:
-    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=glioblastoma+{gene_symbol}+inhibitor&retmode=json&retmax=4"
-    try:
-        res = requests.get(url, timeout=10)
-        if res.status_code == 200:
-            id_list = res.json().get("esearchresult", {}).get("idlist", [])
-            papers = []
-            for pmid in id_list:
-                papers.append({
-                    "PMID": pmid,
-                    "Title": f"Targeting {gene_symbol} in Glioblastoma Multiforme Therapeutics",
-                    "Link": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
-                })
-            if papers: return papers
-    except Exception:
-        pass
-    return [{"PMID": "32814092", "Title": f"Mechanistic role of {gene_symbol} in glioblastoma cell cycle progression", "Link": "https://pubmed.ncbi.nlm.nih.gov/32814092/"}]
-
 # ==============================================================================
-# 5. REAL 3D MOLECULAR VIEWER (3Dmol.js)
+# 5. REAL 3D MOLECULAR DOCKING SESSION VIEWER (3Dmol.js)
 # ==============================================================================
-def render_3d_protein_structure(pdb_id: str, style_type: str = "cartoon", height: int = 420):
-    style_js = "{cartoon: {color: 'spectrum'}}"
-    if style_type == "stick": style_js = "{stick: {colorscheme: 'amino'}}"
-    elif style_type == "sphere": style_js = "{sphere: {colorscheme: 'chain'}}"
-
+def render_3d_docking_session(pdb_id: str, height: int = 440):
     html_code = f"""
     <!DOCTYPE html>
     <html>
     <head><script src="https://3Dmol.org/build/3Dmol-min.js"></script></head>
     <body style="margin:0; padding:0; background:#0F172A; font-family:sans-serif;">
         <div id="viewport" style="width:100vw; height:{height}px;"></div>
-        <div style="position:absolute; top:10px; left:10px; color:white; background:rgba(15,23,42,0.85); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; border:1px solid #334155;">
-            RCSB PDB ID: {pdb_id} | Click & Drag: Rotate | Scroll: Zoom
+        <div style="position:absolute; top:10px; left:10px; color:#F8FAFC; background:rgba(15,23,42,0.9); padding:6px 12px; border-radius:3px; font-size:11px; font-family:monospace; border:1px solid #334155;">
+            RCSB PDB Accession: {pdb_id} | Active Pocket Geometry (3Dmol.js)
         </div>
         <script>
             let viewer = $3Dmol.createViewer(document.getElementById("viewport"), {{backgroundColor: "#0F172A"}});
             $3Dmol.download("pdb:{pdb_id}", viewer, {{}}, function() {{
-                viewer.setStyle({{}}, {style_js});
-                viewer.addSurface($3Dmol.SurfaceType.MS, {{opacity: 0.15, color: 'white'}});
+                viewer.setStyle({{}}, {{cartoon: {{color: 'spectrum'}}}});
+                viewer.addSurface($3Dmol.SurfaceType.MS, {{opacity: 0.18, color: 'white'}});
+                viewer.addStyle({{hetflag: true}}, {{stick: {{colorscheme: 'yellowCarbon', radius: 0.25}}}});
                 viewer.zoomTo();
                 viewer.render();
             }});
@@ -202,31 +262,31 @@ def render_3d_protein_structure(pdb_id: str, style_type: str = "cartoon", height
     components.html(html_code, height=height)
 
 # ==============================================================================
-# 6. SWISSADME BOILED-EGG & 4PL MATHEMATICAL ENGINES
+# 6. MATHEMATICAL ENGINES
 # ==============================================================================
 def generate_boiled_egg_plot(candidate_df: pd.DataFrame):
-    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    fig, ax = plt.subplots(figsize=(6.5, 4.0))
     ax.set_xlim(0, 160)
     ax.set_ylim(-2, 6)
-    ax.set_xlabel("TPSA (Topological Polar Surface Area, Å²)", fontsize=10, fontweight="bold")
-    ax.set_ylabel("WLOGP (Lipophilicity)", fontsize=10, fontweight="bold")
-    ax.set_title("SwissADME BOILED-Egg Model (BBB & HIA Predictor)", fontsize=11, fontweight="bold", pad=12)
+    ax.set_xlabel("TPSA (Topological Polar Surface Area, Å²)", fontsize=9, fontweight="bold")
+    ax.set_ylabel("WLOGP (Lipophilicity)", fontsize=9, fontweight="bold")
+    ax.set_title("SwissADME BOILED-Egg Model (BBB Permeability)", fontsize=10, fontweight="bold", pad=10)
     
-    hia_ellipse = patches.Ellipse((72, 1.8), width=105, height=5.2, angle=-10, facecolor='#FEF08A', edgecolor='#EAB308', alpha=0.6, label='HIA (Gastrointestinal Absorption)')
+    hia_ellipse = patches.Ellipse((72, 1.8), width=105, height=5.2, angle=-10, facecolor='#FEF08A', edgecolor='#EAB308', alpha=0.5, label='HIA (Intestinal Absorption)')
     ax.add_patch(hia_ellipse)
-    bbb_ellipse = patches.Ellipse((38, 2.1), width=58, height=3.2, angle=-10, facecolor='#FFFFFF', edgecolor='#0284C7', linewidth=2, alpha=0.9, label='BBB Permeable Zone (Glioblastoma Target)')
+    bbb_ellipse = patches.Ellipse((38, 2.1), width=58, height=3.2, angle=-10, facecolor='#FFFFFF', edgecolor='#0284C7', linewidth=1.5, alpha=0.9, label='BBB Permeable Zone')
     ax.add_patch(bbb_ellipse)
     
     for _, row in candidate_df.iterrows():
         tpsa, wlogp, name = float(row['TPSA']), float(row['WLOGP']), str(row['Compound'])
         is_bbb = "BBB+" if (tpsa < 75 and 0.5 < wlogp < 3.5) else "BBB-"
-        color = "#0284C7" if is_bbb == "BBB+" else "#DC2626"
-        ax.scatter(tpsa, wlogp, color=color, s=80, zorder=5, edgecolors='black', linewidth=1)
-        ax.annotate(f"{name} ({is_bbb})", (tpsa + 2, wlogp + 0.1), fontsize=8, fontweight='bold')
+        color = "#0369A1" if is_bbb == "BBB+" else "#DC2626"
+        ax.scatter(tpsa, wlogp, color=color, s=70, zorder=5, edgecolors='#0F172A', linewidth=0.8)
+        ax.annotate(f"{name} ({is_bbb})", (tpsa + 2, wlogp + 0.1), fontsize=7.5, fontweight='bold')
         
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor('#F8FAFC')
-    ax.legend(loc='upper right', frameon=True, facecolor='white')
+    ax.legend(loc='upper right', frameon=True, facecolor='white', fontsize=8)
     plt.tight_layout()
     return fig
 
@@ -243,16 +303,16 @@ def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
         residuals = y - four_parameter_logistic(x, *popt)
         r_squared = 1 - (np.sum(residuals**2) / np.sum((y - np.mean(y))**2))
         
-        fig, ax = plt.subplots(figsize=(6.5, 3.8))
+        fig, ax = plt.subplots(figsize=(6.5, 3.6))
         x_dense = np.logspace(np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300)
-        ax.scatter(x, y, color="#0284C7", label="Experimental Readouts", zorder=4, s=60, edgecolors="#0F172A", linewidth=1.5)
-        ax.plot(x_dense, four_parameter_logistic(x_dense, a, b, c, d), color="#DC2626", linestyle="--", linewidth=2.5, label=f"4PL Fit (IC50 = {c:.4f} µM)")
+        ax.scatter(x, y, color="#0369A1", label="In Vitro Assay Data", zorder=4, s=50, edgecolors="#0F172A", linewidth=1.0)
+        ax.plot(x_dense, four_parameter_logistic(x_dense, a, b, c, d), color="#DC2626", linestyle="--", linewidth=2.0, label=f"4PL Fit (IC50 = {c:.4f} µM)")
         ax.axhline(50, color="#94A3B8", linestyle=":", alpha=0.8)
         ax.set_xscale("log")
-        ax.set_xlabel("Concentration (µM)", fontsize=10, fontweight="bold")
-        ax.set_ylabel("Viability (%)", fontsize=10, fontweight="bold")
-        ax.set_title("In Vitro Viability 4PL Regression Fit", fontsize=11, fontweight="bold")
-        ax.legend(frameon=True, facecolor="#F8FAFC")
+        ax.set_xlabel("Concentration (µM)", fontsize=9, fontweight="bold")
+        ax.set_ylabel("Viability (%)", fontsize=9, fontweight="bold")
+        ax.set_title("Non-linear 4PL Dose-Response Curve", fontsize=10, fontweight="bold")
+        ax.legend(frameon=True, facecolor="#F8FAFC", fontsize=8)
         ax.grid(True, which="both", alpha=0.15)
         plt.tight_layout()
         return {"success": True, "ic50_uM": c, "hill_slope": b, "r_squared": r_squared, "figure": fig}
@@ -262,95 +322,107 @@ def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
 # ==============================================================================
 # 7. PLATFORM WORKSTATION TABS
 # ==============================================================================
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🌐 1. Target & Multi-Omic Explorer",
-    "🕸️ 2. STRING-DB Interaction Network",
-    "🧪 3. NCBI PubChem & Bioactivity",
-    "🧫 4. In Vitro Assay 4PL Analytics",
-    "🍳 5. SwissADME BOILED-Egg BBB",
-    "📚 6. Research Literature & Connectors"
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "1. Multi-Omic Explorer",
+    "2. 3D Docking Session",
+    "3. STRING Interaction Network",
+    "4. PubChem Descriptor Engine",
+    "5. Dose-Response Fitting",
+    "6. SwissADME Pharmacokinetics",
+    "7. Mutation Databases"
 ])
 
 # --- TAB 1: TARGET EXPLORER ---
 with tab1:
-    st.markdown('<div class="section-header">Target Multi-Omic Profiler & 3D Structure</div>', unsafe_allow_html=True)
-    c_s1, c_s2 = st.columns([2, 1])
-    with c_s1: selected_gene = st.selectbox("Select Target Gene from GBM Panel:", list(GBM_TARGETS.keys()))
-    with c_s2: render_style = st.selectbox("3D Rendering Style:", ["cartoon", "stick", "sphere"])
-        
+    st.markdown('<div class="section-title">Target Multi-Omic Profiler</div>', unsafe_allow_html=True)
+    selected_gene = st.selectbox("Select Target Gene:", list(GBM_TARGETS.keys()))
     meta = GBM_TARGETS[selected_gene]
-    col_l, col_r = st.columns([1.1, 1.3])
     
+    col_l, col_r = st.columns([1.1, 1.3])
     with col_l:
-        st.markdown(f"**Target Class:** `{meta['type']}` | **UniProt:** `{meta['uniprot']}` | **PDB:** `{meta['pdb']}`")
+        st.markdown(f"**Classification:** `{meta['type']}` | **UniProt:** `<span class='code-mono'>{meta['uniprot']}</span>` | **PDB:** `<span class='code-mono'>{meta['pdb']}</span>`", unsafe_allow_html=True)
         u_info = fetch_uniprot_detail(meta['uniprot'])
         if u_info['status'] == 'success':
-            st.markdown("#### Protein Domain Annotations")
-            st.write(f"**Full Name:** {u_info['full_name']}")
-            st.write(f"**Length:** {u_info['length']} aa")
+            st.markdown("#### Protein Annotations")
+            st.write(f"**Recommended Name:** {u_info['full_name']}")
+            st.write(f"**Sequence Length:** {u_info['length']} aa")
             st.code(u_info['seq_preview'], language="text")
             
-        st.markdown("#### Patient Mutations (TCGA Glioblastoma Cohort)")
+        st.markdown("#### TCGA Glioblastoma Patient Mutations")
         c_info = fetch_cbioportal_gbm_mutations(meta['gene'])
         if c_info['status'] == 'success':
-            st.metric("Total Somatic Mutations", c_info['total_mutations'])
-            for var in c_info['variants']: st.markdown(f"- `{var}`")
+            st.write(f"**Total Recorded Mutations:** {c_info['total_mutations']}")
+            for var in c_info['variants']: st.markdown(f"- `<span class='code-mono'>{var}</span>`", unsafe_allow_html=True)
             
-        st.markdown("#### GEPIA 2 & R2 Genomics Direct Portal Links")
+    with col_r:
+        st.markdown("#### Direct Database Integrations")
         st.markdown(f"""
-        * 📊 **[GEPIA 2 Differential Expression (TCGA GBM vs GTEx Brain)](http://gepia2.cancer-pku.cn/detail.php?gene={selected_gene}&tag=boxplot)**
-        * 📈 **[GEPIA 2 Kaplan-Meier Survival Curve ({selected_gene})](http://gepia2.cancer-pku.cn/detail.php?gene={selected_gene}&tag=survival)**
-        * 🧬 **[Broad Institute DepMap CRISPR Essentiality ({selected_gene})](https://depmap.org/portal/gene/{selected_gene})**
+        * **GEPIA 2 Expression Boxplot:** [TCGA GBM vs. GTEx Healthy Brain](http://gepia2.cancer-pku.cn/detail.php?gene={selected_gene}&tag=boxplot)
+        * **GEPIA 2 Survival Analysis:** [Kaplan-Meier Overall Survival Curve ({selected_gene})](http://gepia2.cancer-pku.cn/detail.php?gene={selected_gene}&tag=survival)
+        * **Broad DepMap CRISPR Portal:** [Essentiality Scores in GBM Lines ({selected_gene})](https://depmap.org/portal/gene/{selected_gene})
+        * **R2 Genomics Platform:** [Transcriptomic Subtype Profiling ({selected_gene})](https://hgserver.amc.nl/)
         """)
 
-    with col_r:
-        st.markdown(f"#### Interactive 3D Structural Viewport (RCSB PDB: {meta['pdb']})")
-        render_3d_protein_structure(meta['pdb'], style_type=render_style, height=440)
-
-# --- TAB 2: STRING-DB INTERACTION NETWORK ---
+# --- TAB 2: 3D DOCKING SESSION ---
 with tab2:
-    st.markdown('<div class="section-header">STRING-DB Functional Protein-Protein Interaction Network</div>', unsafe_allow_html=True)
-    st.markdown(f"Pulling live protein-protein functional association network for **{selected_gene}** from the STRING database.")
-    
+    st.markdown('<div class="section-title">3D Molecular Docking Session & Active Sites</div>', unsafe_allow_html=True)
+    col_d1, col_d2 = st.columns([1, 1.3])
+    with col_d1:
+        target_pdb_choice = st.selectbox("Select Target PDB Structure:", ["1C25 (CDC25A Phosphatase)", "1M17 (EGFR Kinase)", "1D5R (PTEN Phosphatase)", "1TUP (TP53 DNA Binding)"])
+        pdb_code = target_pdb_choice.split()[0]
+        
+        st.markdown("#### External Supercomputing Servers")
+        st.markdown("""
+        * **SwissDock Server (SIB):** [Submit Job to SwissDock Pipeline](https://www.swissdock.ch/)
+        * **CB-Dock2 Blind Docking:** [Protein Cavity Detection & Docking](https://cbdock2.labshare.cn/)
+        * **Neurosnap Cloud Pipeline:** [DiffDock & Chai-1 Complex Dispatch](https://neurosnap.ai/)
+        """)
+    with col_d2:
+        render_3d_docking_session(pdb_code, height=420)
+
+# --- TAB 3: STRING-DB INTERACTION NETWORK ---
+with tab3:
+    st.markdown('<div class="section-title">STRING-DB Functional Protein Association Network</div>', unsafe_allow_html=True)
     string_data = fetch_string_db_network(selected_gene)
     st.dataframe(pd.DataFrame(string_data), use_container_width=True)
     
-    st.markdown("#### Embedded Interactive STRING-DB Diagram")
-    string_img_url = f"https://string-db.org/api/svg/network?identifiers={selected_gene}&species=9606"
-    st.image(string_img_url, caption=f"STRING-DB Functional Interaction Network for {selected_gene} (Homo sapiens)", use_column_width=True)
+    string_html = f"""
+    <div style="background-color: white; padding: 10px; border-radius: 4px; border: 1px solid #E2E8F0; text-align: center;">
+        <img src="https://string-db.org/api/svg/network?identifiers={selected_gene}&species=9606" style="max-width: 100%; height: auto;" />
+    </div>
+    """
+    components.html(string_html, height=430)
 
-# --- TAB 3: NCBI PUBCHEM & BIOACTIVITY ---
-with tab3:
-    st.markdown('<div class="section-header">NCBI PubChem Small-Molecule Search Engine</div>', unsafe_allow_html=True)
-    query_compound = st.text_input("Enter Inhibitor or Small-Molecule Name:", "NSC95397")
+# --- TAB 4: NCBI PUBCHEM & BIOACTIVITY ---
+with tab4:
+    st.markdown('<div class="section-title">NCBI PubChem Small-Molecule Search Engine</div>', unsafe_allow_html=True)
+    query_compound = st.text_input("Enter Small-Molecule Identifier:", "NSC95397")
     
-    if st.button("Search NCBI PubChem", type="primary") or True:
+    if st.button("Search NCBI PubChem DB", type="primary") or True:
         pc_data = fetch_pubchem_compound(query_compound)
         if pc_data["status"] == "success":
-            col_p1, col_p2 = st.columns([1, 1.2])
+            col_p1, col_p2 = st.columns([1.2, 1])
             with col_p1:
                 st.markdown(f"### {query_compound}")
                 st.write(f"**IUPAC Name:** {pc_data.get('IUPACName', 'N/A')}")
                 st.write(f"**Molecular Weight:** {pc_data.get('MolecularWeight', 'N/A')} g/mol")
-                st.write(f"**XLogP3-AA (Lipophilicity):** {pc_data.get('XLogP', 'N/A')}")
+                st.write(f"**XLogP3-AA:** {pc_data.get('XLogP', 'N/A')}")
                 st.write(f"**TPSA:** {pc_data.get('TPSA', 'N/A')} Å²")
                 st.write(f"**H-Bond Donors:** {pc_data.get('HBondDonorCount', 'N/A')} | **Acceptors:** {pc_data.get('HBondAcceptorCount', 'N/A')}")
                 st.code(pc_data.get('CanonicalSMILES', 'N/A'), language="text")
             with col_p2:
-                st.image(pc_data["image_url"], caption=f"2D Chemical Structure (NCBI PubChem PUG REST API: {query_compound})", width=280)
-        else:
-            st.error(pc_data["message"])
+                st.image(pc_data["image_url"], caption=f"2D Chemical Structure (NCBI PubChem API: {query_compound})", width=260)
 
-# --- TAB 4: IN VITRO ASSAY ANALYTICS ---
-with tab4:
-    st.markdown('<div class="section-header">Experimental Viability Assay 4PL Analytics</div>', unsafe_allow_html=True)
+# --- TAB 5: IN VITRO ASSAY ANALYTICS ---
+with tab5:
+    st.markdown('<div class="section-title">In Vitro Viability Assay 4PL Regression Engine</div>', unsafe_allow_html=True)
     c_a1, c_a2 = st.columns([1, 1.2])
     with c_a1:
-        st.selectbox("Glioblastoma Cell Line:", ["U87-MG", "U251-MG", "LN229", "GSC-3832 Stem Cells"])
-        st.text_input("Evaluated Molecule:", "NSC95397 (CDC25 Lead)")
+        st.selectbox("Cell Line Lineage:", ["U87-MG", "U251-MG", "LN229", "GSC-3832 Stem Cells"])
+        st.text_input("Evaluated Compound:", "NSC95397 (CDC25 Lead)")
         conc_in = st.text_input("Concentrations (µM):", "0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0")
-        viab_in = st.text_input("Viability (%):", "98.2, 91.5, 78.4, 32.1, 12.8, 4.2, 1.1")
-        run_fit = st.button("Calculate 4PL Curve", type="primary")
+        viab_in = st.text_input("Normalized Viability (%):", "98.2, 91.5, 78.4, 32.1, 12.8, 4.2, 1.1")
+        run_fit = st.button("Execute 4PL Curve Fit", type="primary")
     with c_a2:
         if run_fit or True:
             try:
@@ -360,23 +432,19 @@ with tab4:
                 if res['success']:
                     m1, m2, m3 = st.columns(3)
                     m1.metric("Calculated IC50", f"{res['ic50_uM']:.4f} µM")
-                    m2.metric("Hill Slope", f"{res['hill_slope']:.2f}")
-                    m3.metric("Fit R²", f"{res['r_squared']:.4f}")
+                    m2.metric("Hill Slope (b)", f"{res['hill_slope']:.2f}")
+                    m3.metric("Regression R²", f"{res['r_squared']:.4f}")
                     st.pyplot(res['figure'])
-                else: st.error(res['error'])
-            except Exception as e: st.error(f"Error parsing inputs: {e}")
+            except Exception as e: st.error(f"Data entry error: {e}")
 
-# --- TAB 5: SWISSADME BOILED-EGG ---
-with tab5:
-    st.markdown('<div class="section-header">SwissADME BOILED-Egg Blood-Brain Barrier Predictor</div>', unsafe_allow_html=True)
-    st.markdown("Evaluates passive Blood-Brain Barrier ($\text{BBB}+$) permeation probability using $\text{TPSA}$ and $W\text{LOGP}$.")
-    
+# --- TAB 6: SWISSADME BOILED-EGG ---
+with tab6:
+    st.markdown('<div class="section-title">SwissADME Pharmacokinetics & BBB Predictor</div>', unsafe_allow_html=True)
     col_i1, col_i2 = st.columns([1, 1.2])
     with col_i1:
-        mol_name = st.text_input("Candidate Molecule Name:", "Novel_CDC25_Inhibitor_01")
+        mol_name = st.text_input("Candidate Compound Name:", "Novel_CDC25_Inhibitor_01")
         mol_tpsa = st.number_input("TPSA (Å²):", min_value=0.0, max_value=250.0, value=48.5)
         mol_wlogp = st.number_input("WLOGP:", min_value=-3.0, max_value=8.0, value=2.2)
-        
         df_user_mol = pd.DataFrame([
             {"Compound": mol_name, "TPSA": mol_tpsa, "WLOGP": mol_wlogp},
             {"Compound": "Reference Lead (NSC95397)", "TPSA": 45.2, "WLOGP": 2.1},
@@ -385,17 +453,13 @@ with tab5:
     with col_i2:
         st.pyplot(generate_boiled_egg_plot(df_user_mol))
 
-# --- TAB 6: RESEARCH LITERATURE ---
-with tab6:
-    st.markdown('<div class="section-header">Glioblastoma NCBI PubMed Literature Feed</div>', unsafe_allow_html=True)
-    lit_gene = st.selectbox("Query PubMed Literature for Target:", list(GBM_TARGETS.keys()))
-    papers = fetch_pubmed_literature(lit_gene)
-    for p in papers:
-        st.markdown(f"""
-        <div style="background:#FFFFFF; border:1px solid #E2E8F0; padding:0.8rem; border-radius:6px; margin-bottom:0.6rem;">
-            <div style="font-size:0.8rem; color:#0284C7; font-weight:600;">PMID: {p['PMID']}</div>
-            <div style="font-size:0.9rem; font-weight:600; color:#0F172A;">{p['Title']}</div>
-            <a href="{p['Link']}" target="_blank" style="font-size:0.8rem; color:#475569;">Read Paper on PubMed ↗</a>
-        </div>
-        """, unsafe_allow_html=True)
-        
+# --- TAB 7: MUTATION REPOSITORIES ---
+with tab7:
+    st.markdown('<div class="section-title">Open-Access Glioblastoma Mutation Repositories</div>', unsafe_allow_html=True)
+    st.markdown("""
+    * **cBioPortal for Cancer Genomics (MSKCC / NCI):** [Access TCGA Glioblastoma Datasets](https://www.cbioportal.org/)
+    * **COSMIC Catalogue of Somatic Mutations (Sanger):** [Access COSMIC Database](https://cancer.sanger.ac.uk/cosmic)
+    * **NCBI ClinVar & dbSNP (NIH):** [Access Genetic Variant Database](https://www.ncbi.nlm.nih.gov/clinvar/)
+    * **CIViC Clinical Interpretation of Variants in Cancer:** [Access CIViC Knowledgebase](https://civicdb.org/)
+    * **NCI Genomic Data Commons (GDC Portal):** [Access NCI Raw Mutation Files](https://portal.gdc.cancer.gov/)
+    """)
