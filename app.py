@@ -1,4 +1,16 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import streamlit as st
+import pandas as pd
+import json
+
+from core.explorer import GBM_TARGETS, fetch_uniprot_summary, fetch_cbioportal_mutation_stats
+from core.dose_response import fit_4pl_curve
+from core.screening import calibrate_anchor_model
+from core.explainability import compute_feature_contributions
+from modules.cdc25.data_loader import load_cdc25_anchor_set, load_cdc25_screening_candidatesimport streamlit as st
 import pandas as pd
 import json
 
