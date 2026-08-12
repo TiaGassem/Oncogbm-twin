@@ -1459,7 +1459,7 @@ elif (
            The **US Food and Drug Administration (FDA)**, **European Medicines Agency (EMA)**, **United States Pharmacopeia (USP <1032>)**, and the **NIH Chemical Genomics Center (NCGC)** mandate non-linear 4PL regression for all bioassay potencies.
 
         2. **Elimination of Linearization Distortions:**
-           Historical linear transformations ( Lineweaver-Burk, Scatchard, or log-logit linear fits) distort experimental error structures. By forcing non-linear sigmoidal data into a straight line, linear transformations unevenly weight noise at extreme concentration ends, leading to biased $\text{IC}_{50}$ values. 4PL non-linear regression preserves raw variance using unweighted/weighted least-squares optimization.
+           Historical linear transformations (e.g., Lineweaver-Burk, Scatchard, or log-logit linear fits) distort experimental error structures. By forcing non-linear sigmoidal data into a straight line, linear transformations unevenly weight noise at extreme concentration ends, leading to biased $\text{IC}_{50}$ values. 4PL non-linear regression preserves raw variance using unweighted/weighted least-squares optimization.
 
         3. **Asymptote Noise Isolation:**
            Unlike 2-parameter linear models, 4PL independently fits top ($a$) and bottom ($d$) plateaus. This prevents high-dose experimental noise or incomplete cell killing from artificially shifting the calculated $\text{IC}_{50}$ value ($c$).
@@ -1490,12 +1490,12 @@ elif (
     with tab_synergy:
         st.subheader("Drug Combination Synergy Engine (Chou-Talalay Theorem)")
 
-        st.markdown(r"""
+        st.markdown("""
         <div class="academic-guide">
             <b>Targeting Chemotherapeutic Resistance in Glioblastoma Stem Cells (GSCs):</b><br>
-            • <b>What It Is:</b> An automated quantitative analysis module implementing the Chou-Talalay Median-Effect Combination Index ($\text{CI}$) theorem.<br>
+            • <b>What It Is:</b> An automated quantitative analysis module implementing the Chou-Talalay Median-Effect Combination Index (CI) theorem.<br>
             • <b>Why You Need It:</b> Single-agent monotherapies routinely fail in high-grade gliomas due to oncogenic network redundancy and MGMT-mediated alkylation repair. This engine determines whether pairing your candidate compound with standard-of-care Temozolomide (TMZ) produces true synergism, additive efficacy, or unwanted antagonism.<br>
-            • <b>How to Use It:</b> Input the monotherapy $\text{IC}_{50}$ values for each drug, enter the corresponding doses used in combination to achieve 50% growth inhibition ($f_a = 0.50$), and evaluate the generated Combination Index ($\text{CI}$).<br>
+            • <b>How to Use It:</b> Input the monotherapy IC<sub>50</sub> values for each drug, enter the corresponding doses used in combination to achieve 50% growth inhibition (<i>f<sub>a</sub></i> = 0.50), and evaluate the generated Combination Index (CI).<br>
             • <b>Key Benefits:</b> Replaces manual dose-effect curve transformations with instant, reproducible calculations—optimizing therapeutic dosing windows to minimize systemic toxicity while suppressing TMZ resistance.<br>
             • <b>Methodological Validation & Data Sources:</b> Grounded in peer-reviewed mass-action kinetic models (Chou & Talalay, 1984; Chou, 2006) and programmatically powered by verified open-access REST APIs, including NCBI PubChem, EMBL-EBI ChEMBL, and the NIH TCGA OpenAPI portal.
         </div>
@@ -1504,7 +1504,7 @@ elif (
         col_syn1, col_syn2 = st.columns(2)
 
         with col_syn1:
-            st.markdown(r"##### 1. Single Monotherapy Potencies ($\text{IC}_{50}$)")
+            st.markdown("##### 1. Single Monotherapy Potencies (IC<sub>50</sub>)", unsafe_allow_html=True)
             default_candidate_ic50 = st.session_state.get("ic50", 0.2703)
             ic50_drug1 = st.number_input(
                 "Candidate Hit Monotherapy IC50 (µM):",
@@ -1599,7 +1599,7 @@ elif (
     with tab_guide:
         st.subheader("4. Platform Master User Guide & Open-Access Library")
 
-        st.markdown(r"""
+        st.markdown("""
         <div class="academic-guide">
             <b>Platform Overview & Master User Guide:</b><br>
             The <b>GBM-Twin Platform</b> is an open-access translational workbench integrating public multi-omic cohorts (TCGA/CGGA), 
@@ -1612,13 +1612,13 @@ elif (
         #### **A. Step-by-Step User Workflow**
 
         1. **Target Selection & Genomic Validation (Workstation I):**
-           * Select your candidate target gene ( **CDC25A** or other .......) from the primary sidebar dropdown.
+           * Select your candidate target gene (e.g., **CDC25A**) from the primary sidebar dropdown.
            * Analyze differential transcript upregulation comparing TCGA Glioblastoma tumors ($N=163$) against GTEx normal brain controls ($N=207$).
            * Review Cox survival Hazard Ratios ($\text{HR}$) and log-rank $p$-values to confirm target prognostic relevance.
            * Inspect somatic mutation rates via the cBioPortal REST API.
 
         2. **Structural Docking & Molecular Dynamics (Workstation II):**
-           * Retrieve active site crystal structures from RCSB PDB ( Example (CDC25A) ..PDB ID `1C25`).
+           * Retrieve active site crystal structures from RCSB PDB (e.g., PDB ID `1C25`).
            * Submit candidate SMILES strings to **CB-Dock2** or **SwissDock** to calculate binding free energy ($\Delta G \le -6.0\text{ kcal/mol}$).
            * Execute 100 ns explicit-solvent GROMACS MD simulations to extract $\text{C}\alpha$ backbone **RMSD** ($< 2.0\text{ \AA}$) and **RMSF** trajectory stability profiles.
 
