@@ -372,30 +372,42 @@ DEFAULT_PROTOX = {
 }
 
 # ==============================================================================
-# 3. SIDEBAR CONTROLS & QUICK-START PRESET ENGINE
+# 3. SIDEBAR CONTROLS & DYNAMIC STATE MANAGEMENT
 # ==============================================================================
 st.sidebar.markdown("### Executive Control Hub")
 
 st.sidebar.markdown("#### Quick-Start Research Presets")
-if st.sidebar.button("Load Pre-Configured CDC25A + TMZ Benchmark", type="primary"):
-    st.session_state["target_gene_input"] = "CDC25A"
-    st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
-    st.session_state["ic50"] = 0.2703
-    st.sidebar.success("Loaded CDC25A + TMZ Benchmark Data!")
 
-# Ensure state persistence
+# Session state initialization
 if "target_gene_input" not in st.session_state:
     st.session_state["target_gene_input"] = "CDC25A"
 if "drug_preset_input" not in st.session_state:
     st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
 
+# Handle Preset Button Click Cleanly
+if st.sidebar.button("Load Pre-Configured CDC25A + TMZ Benchmark", type="primary"):
+    st.session_state["target_gene_input"] = "CDC25A"
+    st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
+    st.session_state["ic50"] = 0.2703
+    st.session_state["preset_loaded"] = True
+    st.rerun()
+
+if st.session_state.get("preset_loaded", False):
+    st.sidebar.success("Loaded CDC25A + TMZ Benchmark Data!")
+
+# Target Gene Selector (Updates state dynamically upon user change)
 selected_gene = st.sidebar.selectbox(
     "Select Target Gene:",
     list(GBM_TARGETS.keys()),
     index=list(GBM_TARGETS.keys()).index(st.session_state["target_gene_input"]),
-    key="gene_selector",
+    key="gene_selector_dropdown",
 )
-st.session_state["target_gene_input"] = selected_gene
+
+# Clear preset notification when user selects a different gene manually
+if selected_gene != st.session_state["target_gene_input"]:
+    st.session_state["target_gene_input"] = selected_gene
+    st.session_state["preset_loaded"] = False
+    st.rerun()
 
 active_cell_line = st.sidebar.selectbox(
     "Glioblastoma Cell Line:",
@@ -409,11 +421,12 @@ active_cell_line = st.sidebar.selectbox(
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("#### SMILES Candidate Selector")
+
 selected_drug_preset = st.sidebar.selectbox(
     "Benchmark Anti-GBM Drug:",
     list(BENCHMARK_DRUGS.keys()),
     index=list(BENCHMARK_DRUGS.keys()).index(st.session_state["drug_preset_input"]),
-    key="drug_selector",
+    key="drug_selector_dropdown",
 )
 st.session_state["drug_preset_input"] = selected_drug_preset
 
@@ -435,7 +448,7 @@ st.sidebar.markdown("**Lead Researcher:** Tasnim Gassem")
 st.sidebar.markdown("**Platform:** GBM-Twin v9.5")
 st.sidebar.markdown("**License:** MIT Academic License © 2026")
 
-# Dynamic Target Metadata Extraction
+# Extract metadata dynamically matching user selection
 meta = GBM_TARGETS[selected_gene]
 
 # ==============================================================================
@@ -767,7 +780,6 @@ def plot_gene_expression_comparison(gene_symbol: str, base_expr: float):
 
 def plot_coexpression_matrix(active_gene: str):
     genes = [active_gene, "CDK1", "EGFR", "PTEN", "TP53", "MGMT", "MMP9"]
-    # Ensure uniqueness in labels
     genes = list(dict.fromkeys(genes))[:6]
 
     matrix = np.eye(len(genes))
@@ -1305,7 +1317,6 @@ elif master_module == "Workstation II: Structural Target Docking & SwissTarget P
             st.write(f"**Evaluated Candidate SMILES:** `{quick_smiles}`")
 
             # DYNAMIC DUAL-SCORING SWISSTARGET PREDICTION ENGINE
-            # Calculates electrotopological state and molecular similarity dynamically
             base_prob = min(round(89.4 * (300.0 / mw_val) ** 0.25, 1), 97.8)
 
             # Construct dynamic target ordering: Selected gene is ALWAYS Row #0
@@ -1343,15 +1354,14 @@ elif master_module == "Workstation II: Structural Target Docking & SwissTarget P
             st.markdown(f"#### B. SwissDock / AutoDock Vina In-Platform Scoring Engine")
             st.write(f"**Target Receptor:** `{selected_gene}` (PDB ID: `{meta['pdb']}`)")
 
-            # DYNAMIC AUTODOCK VINA / SWISSDOCK EADOCK DSS SCORING FUNCTION
-            # ΔG = ΔG_vdw + ΔG_hbond + ΔG_electro + ΔG_desolv + ΔG_tors
+            # DYNAMIC AUTODOCK VINA / SWISSDOCK SCORING FUNCTION
             dg_vdw = -0.012 * mw_val
             dg_hbond = -0.45 * float(adme_props.get("HBondAcceptorCount", 3))
             dg_lipophil = -0.38 * wlogp_val
             dg_torsion = 0.25 * float(adme_props.get("HBondDonorCount", 1))
 
             calculated_dg = -4.8 + dg_vdw + dg_hbond + dg_lipophil + dg_torsion
-            calculated_dg = max(min(calculated_dg, -4.2), -9.9) # Kept within physical docking bounds
+            calculated_dg = max(min(calculated_dg, -4.2), -9.9)
 
             r_const = 0.0019872  # kcal/(mol*K)
             temp_k = 310.15     # 37 °C physiological temp
