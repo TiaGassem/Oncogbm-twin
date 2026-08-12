@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
 # ==============================================================================
@@ -22,7 +21,7 @@ st.markdown("""
     .metric-card { background-color: #ffffff; padding: 20px; border-radius: 8px; border-left: 5px solid #1E88E5; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .status-badge { background-color: #e3f2fd; color: #0d47a1; padding: 4px 12px; border-radius: 16px; font-weight: bold; font-size: 0.85rem; }
 </style>
-""", unsafe_allow_keywords=True)
+""", unsafe_allow_html=True)
 
 # ==============================================================================
 # 2. TARGET GENE DATABASE & METADATA
@@ -183,21 +182,15 @@ TCGA_MUTATION_FALLBACKS = {
 st.sidebar.markdown("### Executive Control Hub")
 st.sidebar.markdown("#### Quick-Start Research Presets")
 
-# 1. Initialize Default Session States
+# Initialize Session States
 if "target_gene_input" not in st.session_state:
     st.session_state["target_gene_input"] = "CDC25A"
-if "drug_preset_input" not in st.session_state:
-    st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
 
-# 2. Preset Button Logic
 if st.sidebar.button("Load Pre-Configured CDC25A + TMZ Benchmark", type="primary"):
     st.session_state["target_gene_input"] = "CDC25A"
-    st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
-    st.session_state["ic50"] = 0.2703
     st.session_state["show_preset_msg"] = True
     st.rerun()
 
-# 3. Direct Dropdown Assignment (Bypasses Session State Lag)
 selected_gene = st.sidebar.selectbox(
     "Select Target Gene:",
     list(GBM_TARGETS.keys()),
@@ -205,27 +198,19 @@ selected_gene = st.sidebar.selectbox(
     key="target_dropdown_widget"
 )
 
-# Sync session_state if the user manually changes the target gene
 if selected_gene != st.session_state["target_gene_input"]:
     st.session_state["target_gene_input"] = selected_gene
     st.session_state["show_preset_msg"] = False
     st.rerun()
 
-# Display preset message ONLY when target is explicitly CDC25A AND preset button was pressed
 if st.session_state.get("show_preset_msg", False) and selected_gene == "CDC25A":
     st.sidebar.success("Loaded CDC25A + TMZ Benchmark Data!")
 
 active_cell_line = st.sidebar.selectbox(
     "Glioblastoma Cell Line:",
-    [
-        "U87-MG (Astrocytoma)",
-        "U251-MG (Glia)",
-        "LN229 (Phenotype)",
-        "GSC-3832 (Patient Stem Cells)",
-    ],
+    ["U87-MG (Astrocytoma)", "U251-MG (Glia)", "LN229 (Phenotype)", "GSC-3832 (Patient Stem Cells)"]
 )
 
-# Extract dynamic metadata for active selection
 meta = GBM_TARGETS[selected_gene]
 
 # ==============================================================================
@@ -242,7 +227,7 @@ st.markdown("""
         AutoDock Vina scoring engines, 4PL kinetic drug synergy algorithms, and automated prospectus reports.
     </p>
 </div>
-""", unsafe_allow_keywords=True)
+""", unsafe_allow_html=True)
 
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("Active Gene Target", selected_gene)
@@ -255,7 +240,7 @@ st.markdown(f"""
     <strong>ACTIVE TARGET PROFILE: {selected_gene}</strong><br>
     <span style="color:#555;">{meta['full_name']} | {meta['role']}</span>
 </div>
-""", unsafe_allow_keywords=True)
+""", unsafe_allow_html=True)
 
 # ==============================================================================
 # 5. WORKSTATION TABS
@@ -280,46 +265,31 @@ with tab1:
         normal_data = np.random.normal(loc=meta["normal_exp"], scale=3.0, size=150)
         gbm_data = np.random.normal(loc=meta["tumoral_exp"], scale=8.0, size=300)
         
-        df_exp = pd.DataFrame({
-            "Expression (TPM)": np.concatenate([normal_data, gbm_data]),
-            "Cohort": ["GTEx Normal Brain"]*150 + ["TCGA Glioblastoma"]*300
-        })
-        
-        fig_box = px.box(
-            df_exp, x="Cohort", y="Expression (TPM)", color="Cohort",
-            color_discrete_map={"GTEx Normal Brain": "#4CAF50", "TCGA Glioblastoma": "#E53935"},
-            points="outliers"
-        )
-        fig_box.update_layout(showlegend=False, height=380, template="plotly_white")
-        st.plotly_chart(fig_box, use_container_width=True)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.boxplot([normal_data, gbm_data], labels=["GTEx Normal", "TCGA GBM"], patch_artist=True)
+        ax.set_ylabel("Expression (TPM)")
+        ax.set_title(f"{selected_gene} Transcript Expression")
+        st.pyplot(fig)
         
     with col2:
         st.markdown(f"#### Kaplan-Meier Survival Analysis ({selected_gene} High vs Low)")
         time_days = np.linspace(0, 1500, 100)
-        
-        # Adjust survival based on HR
         decay_low = 0.002
         decay_high = decay_low * meta["hr"]
         
         surv_low = np.exp(-decay_low * time_days) * 100
         surv_high = np.exp(-decay_high * time_days) * 100
         
-        df_km = pd.DataFrame({
-            "Time (Days)": np.tile(time_days, 2),
-            "Survival Probability (%)": np.concatenate([surv_high, surv_low]),
-            "Group": [f"High {selected_gene} Expression"]*100 + [f"Low {selected_gene} Expression"]*100
-        })
-        
-        fig_km = px.line(
-            df_km, x="Time (Days)", y="Survival Probability (%)", color="Group",
-            color_discrete_map={f"High {selected_gene} Expression": "#D32F2F", f"Low {selected_gene} Expression": "#1976D2"}
-        )
-        fig_km.update_layout(height=380, template="plotly_white", legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99))
-        st.plotly_chart(fig_km, use_container_width=True)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.plot(time_days, surv_high, label=f"High {selected_gene}", color="red")
+        ax.plot(time_days, surv_low, label=f"Low {selected_gene}", color="blue")
+        ax.set_xlabel("Time (Days)")
+        ax.set_ylabel("Survival Probability (%)")
+        ax.set_title(f"Overall Survival ({selected_gene})")
+        ax.legend()
+        st.pyplot(fig)
 
     st.markdown("---")
-    st.markdown(f"#### Somatic Mutation Spectrum & Co-expression Correlates ({selected_gene})")
-    
     col3, col4 = st.columns(2)
     with col3:
         st.markdown("**Recurrent Somatic Variants in TCGA GBM Cohort:**")
@@ -361,22 +331,8 @@ with tab2:
             "Scoring Function": "AutoDock Vina v1.2.3"
         })
         
-        st.markdown("#### SwissTargetPrediction Profiler (Ranked Probability)")
-        target_prob = pd.DataFrame({
-            "Target Gene": [selected_gene, "CDC25A" if selected_gene != "CDC25A" else "CDC25C", "EGFR", "CDK2", "MMP9"],
-            "Probability Score": [0.94, 0.62, 0.41, 0.28, 0.15]
-        })
-        fig_prob = px.bar(
-            target_prob, x="Probability Score", y="Target Gene", orientation='h',
-            color="Probability Score", color_continuous_scale="Viridis"
-        )
-        fig_prob.update_layout(height=280, template="plotly_white")
-        st.plotly_chart(fig_prob, use_container_width=True)
-        
     with c2:
         st.markdown(f"#### Structural Visualization ({meta['pdb']})")
-        st.info(f"3D Structure dynamically fetched for UniProt: **{meta['uniprot']}** / PDB ID: **{meta['pdb']}**")
-        
         st.markdown(f"""
         <div style="background-color:#1e1e1e; color:#00ffcc; padding:40px; border-radius:10px; text-align:center; font-family:monospace;">
             <h3>3D MOL* VIEWER ACTIVE</h3>
@@ -384,7 +340,7 @@ with tab2:
             <p>Binding Energy: {meta['binding_energy']} kcal/mol</p>
             <p>Active Pocket Center: [{meta['dock_grid']['x']}, {meta['dock_grid']['y']}, {meta['dock_grid']['z']}]</p>
         </div>
-        """, unsafe_allow_keywords=True)
+        """, unsafe_allow_html=True)
         st.markdown(f"[🔗 Open Full Interactive Structure on RCSB PDB ({meta['pdb']})](https://www.rcsb.org/structure/{meta['pdb']})")
 
 # ------------------------------------------------------------------------------
@@ -394,7 +350,6 @@ with tab3:
     st.subheader("ProTox-3 In Silico Toxicity & BOILED-Egg BBB Permeability")
     
     t1, t2 = st.columns(2)
-    
     with t1:
         st.markdown("#### ProTox-3 Toxicity Organ Endpoint Predictions")
         tox_df = pd.DataFrame({
@@ -403,48 +358,37 @@ with tab3:
             "Probability": [0.88, 0.92, 0.74, 0.95, 0.81]
         })
         st.dataframe(tox_df, hide_index=True, use_container_width=True)
-        
         st.metric("Predicted Oral Toxicity LD50", "850 mg/kg (GHS Class IV)")
         
     with t2:
         st.markdown("#### BOILED-Egg Blood-Brain Barrier (BBB) & HIA Model")
-        
-        wlogp = [1.8, 2.4, 3.1, 0.5, 4.2]
-        tpsa = [65.2, 88.0, 42.1, 120.5, 35.0]
-        labels = ["Lead Compound", "Temozolomide", "Metabolite A", "Control 1", "Control 2"]
-        
-        df_egg = pd.DataFrame({"WLOGP": wlogp, "TPSA": tpsa, "Compound": labels})
-        
-        fig_egg = px.scatter(
-            df_egg, x="TPSA", y="WLOGP", color="Compound", text="Compound",
-            title="WLOGP vs TPSA (BBB Permeability Zone)"
-        )
-        fig_egg.update_traces(textposition='top center', marker=dict(size=14))
-        fig_egg.update_layout(height=350, template="plotly_white")
-        st.plotly_chart(fig_egg, use_container_width=True)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.scatter([65.2, 88.0, 42.1], [1.8, 2.4, 3.1], color=["blue", "green", "red"], s=100)
+        ax.set_xlabel("TPSA (Å²)")
+        ax.set_ylabel("WLOGP")
+        ax.set_title("BOILED-Egg BBB Permeability Zone")
+        st.pyplot(fig)
 
 # ------------------------------------------------------------------------------
-# TAB 4: SYNERGY, ASSAYS & LITERATURE
+# TAB 4: SYNERGY & DOSSIER
 # ------------------------------------------------------------------------------
 with tab4:
     st.subheader(f"4PL Dose-Response Synergy & Executive Prospectus ({selected_gene})")
     
     s1, s2 = st.columns(2)
-    
     with s1:
         st.markdown("#### 4PL Non-Linear Dose-Response Curve")
-        
         conc = np.logspace(-3, 2, 20)
         ic50_val = meta["ic50_uM"]
-        
         response = 100 / (1 + (conc / ic50_val)**1.2)
         
-        df_4pl = pd.DataFrame({"Concentration (µM)": conc, "Viability (%)": response})
-        
-        fig_4pl = px.line(df_4pl, x="Concentration (µM)", y="Viability (%)", log_x=True)
-        fig_4pl.add_vline(x=ic50_val, line_dash="dash", line_color="red", annotation_text=f"IC50 = {ic50_val} µM")
-        fig_4pl.update_layout(height=350, template="plotly_white")
-        st.plotly_chart(fig_4pl, use_container_width=True)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.semilogx(conc, response, color="crimson", linewidth=2)
+        ax.axvline(x=ic50_val, linestyle="--", color="gray", label=f"IC50 = {ic50_val} µM")
+        ax.set_xlabel("Concentration (µM)")
+        ax.set_ylabel("Viability (%)")
+        ax.legend()
+        st.pyplot(fig)
         
     with s2:
         st.markdown("#### Chou-Talalay Combination Index (CI) with TMZ")
@@ -455,43 +399,12 @@ with tab4:
             "Effect": ["Slight Synergy", "Synergy", "Strong Synergy", "Synergy"]
         })
         st.dataframe(ci_df, hide_index=True, use_container_width=True)
-        st.caption("CI < 1 indicates Synergy; CI = 1 Additive; CI > 1 Antagonism.")
 
     st.markdown("---")
-    st.markdown("### Executive Prospectus Report Generator")
-    
     if st.button("Generate & Download Executive Prospectus Dossier", type="primary"):
-        dossier = f"""
-================================================================================
-EXECUTIVE IN SILICO DISCOVERY DOSSIER: {selected_gene}
-PLATFORM: GBM-TWIN v9.5 | AUTHOR: TASNIM GASSEM
-================================================================================
-
-1. TARGET GENE METRICS:
-   - Target Gene: {selected_gene} ({meta['full_name']})
-   - UniProt Accession: {meta['uniprot']}
-   - RCSB PDB Structure: {meta['pdb']}
-   - Hazard Ratio (TCGA GBM): {meta['hr']} (p = {meta['p_val']})
-
-2. IN SILICO DOCKING & BINDING AFFINITY:
-   - AutoDock Vina Free Energy (ΔG): {meta['binding_energy']} kcal/mol
-   - Calculated Dissociation Constant (Kd): {meta['kd_nm']} nM
-   - Grid Box Center: [{meta['dock_grid']['x']}, {meta['dock_grid']['y']}, {meta['dock_grid']['z']}]
-
-3. IN VITRO ASSAY ESTIMATES ({active_cell_line}):
-   - Projected Monotherapy IC50: {meta['ic50_uM']} µM
-   - Temozolomide Combination Index (CI @ Fa 0.9): 0.48 (Strong Synergy)
-   - BBB Permeability Status: High (BOILED-Egg Compliant)
-
-4. SUMMARY & RECOMMENDATION:
-   {selected_gene} demonstrates significant prognostic power in TCGA glioblastoma 
-   cohorts. Structural docking confirms tight binding affinity within the catalytic pocket.
-   Combination therapy with Temozolomide shows potent synergistic viability reduction in 
-   {active_cell_line} models. Advance lead compound to preclinical validation.
-================================================================================
-"""
+        dossier = f"EXECUTIVE DOSSIER FOR {selected_gene}\nUniProt: {meta['uniprot']}\nPDB: {meta['pdb']}"
         st.download_button(
-            label=f" Save {selected_gene}_Prospectus.txt",
+            label=f"📥 Save {selected_gene}_Prospectus.txt",
             data=dossier,
             file_name=f"{selected_gene}_GBM_Discovery_Prospectus.txt",
             mime="text/plain"
