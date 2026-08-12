@@ -404,7 +404,7 @@ st.markdown(
     <div class="banner-title">Glioblastoma Precision Oncology & In Silico Discovery Workbench</div>
     <div class="banner-subtitle">
         Integrates Multi-Omic Cohort Data, Structural Molecular Docking, 100ns MD Protocols, ProTox-3 Toxicity Estimators, 
-        BOILED-Egg BBB Permeability Models, Live Invasion Pathways, and 4PL In Vitro Kinetics.
+        BOILED-Egg BBB Permeability Models, Live Invasion Pathways, 4PL Kinetics & Drug Synergy Engines.
     </div>
 </div>
 """,
@@ -1104,7 +1104,7 @@ elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
             {
                 "Output Metric": "Binding Energy (ΔG)",
                 "Physical Property": "Gibbs free energy of binding",
-                "Target Threshold": "≤ -6.0 kcal/mol (Bioactive Hit)",
+                "Target Threshold": r"≤ -6.0 kcal/mol (Bioactive Hit)",
                 "Manuscript Interpretation": "Indicates spontaneous binding; values ≤ -6.0 kcal/mol denote hit activity (Kd ≤ 40 µM).",
             },
             {
@@ -1122,7 +1122,7 @@ elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
             {
                 "Output Metric": "H-Bond Distance",
                 "Physical Property": "Distance between polar donor and acceptor",
-                "Target Threshold": "≤ 3.2 Å distance",
+                "Target Threshold": r"≤ 3.2 Å distance",
                 "Manuscript Interpretation": "Confirms strong electrostatic anchoring within the active site pocket.",
             },
         ])
@@ -1130,7 +1130,7 @@ elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
 
         with st.expander("Literature Proof for Docking Thresholds (ΔG ≤ -6.0 kcal/mol)"):
             st.markdown(r"""
-            * **Thermodynamic Basis:** $\Delta G = R T \ln(K_d)$. At body temperature ($298.15\text{ K}$), $\Delta G = -6.0\text{ kcal/mol}$ corresponds to a dissociation constant $K_d \approx 40\ \mu\text{M}$, the standard benchmark for active hit selection in virtual screening.
+            * **Thermodynamic Basis:** $\Delta G = R T \ln(K_d)$. At body temperature ($310.15\text{ K}$), $\Delta G = -6.0\text{ kcal/mol}$ corresponds to a dissociation constant $K_d \le 40\ \mu\text{M}$, the standard benchmark for active hit selection in virtual screening.
             * **Primary Literature Citations:**
               1. **Meng, X.-Y. et al. (2011):** *Molecular Docking: A Powerful Approach for Structure-Based Drug Discovery.* **Curr. Comput. Aided Drug Des.** 7(2):146–157 [PMID: 21532826].
               2. **Shityakov, S. & Förster, C. (2014):** *In silico molecular docking studies.* **J. Mol. Model.** 20(8):2327 [PMID: 25056770].
@@ -1287,20 +1287,21 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
     )
 
 # ------------------------------------------------------------------------------
-# WORKSTATION IV: INVASION PATHWAYS, ASSAYS & MASTER LITERATURE LIBRARY
+# WORKSTATION IV: INVASION PATHWAYS, ASSAYS, SYNERGY & MASTER LITERATURE LIBRARY
 # ------------------------------------------------------------------------------
 elif (
     master_module
     == "Workstation IV: Invasion Pathways, 4PL Assays & Literature"
 ):
     st.markdown(
-        '<div class="section-title">Workstation IV — Migration Pathways, 4PL Assays & Master Academic Library</div>',
+        '<div class="section-title">Workstation IV — Migration Pathways, 4PL Assays, Drug Synergy & Master Academic Library</div>',
         unsafe_allow_html=True,
     )
 
-    tab_path, tab_fit, tab_guide = st.tabs([
+    tab_path, tab_fit, tab_synergy, tab_guide = st.tabs([
         "GBM Migration Pathways",
-        "4PL Dose-Response Fitting & Rigorous Mathematical Proofs",
+        "4PL Dose-Response Fitting & Rigorous Proofs",
+        "Chou-Talalay Combination Synergy Engine",
         "Platform User Guide & Master Open-Access Library",
     ])
 
@@ -1380,7 +1381,7 @@ elif (
         st.markdown("---")
 
         # --- SECTION A: MATHEMATICAL FORMULATION & DERIVATION ---
-        st.subheader("📐 Mathematical Formulation & Proof of the 4PL Model")
+        st.subheader("Mathematical Formulation & Proof of the 4PL Model")
         
         st.markdown(r"""
         <div class="academic-guide">
@@ -1420,7 +1421,7 @@ elif (
         st.markdown("---")
 
         # --- SECTION B: PARAMETER EXPLANATIONS ---
-        st.subheader("🧬 Comprehensive Parameter Breakdown")
+        st.subheader("Comprehensive Parameter Breakdown")
 
         col_param1, col_param2 = st.columns(2)
 
@@ -1448,7 +1449,7 @@ elif (
         st.markdown("---")
 
         # --- SECTION C: CREDIBILITY & REGULATORY PROOFS ---
-        st.subheader("🛡️ Scientific Credibility: Why 4PL is 100% Mathematically Correct")
+        st.subheader("Scientific Credibility: Why 4PL is Mathematically Correct")
 
         st.markdown(r"""
         1. **Mandated Regulatory Gold Standard:**
@@ -1469,7 +1470,7 @@ elif (
         st.markdown("---")
 
         # --- SECTION D: ONCOLOGY POTENCY BENCHMARK TABLE ---
-        st.subheader("📊 Glioblastoma Potency Interpretation Benchmarks")
+        st.subheader("Glioblastoma Potency Interpretation Benchmarks")
 
         st.markdown(r"""
         | $\text{IC}_{50}$ Range | Potency Tier | Biological Significance for Glioblastoma | Research Action |
@@ -1481,39 +1482,132 @@ elif (
         """)
 
     # --------------------------------------------------------------------------
-    # TAB 3: USER GUIDE, BIBLIOGRAPHY & THESIS EXPORTER
+    # TAB 3: CHOU-TALALAY COMBINATION SYNERGY ENGINE
+    # --------------------------------------------------------------------------
+    with tab_synergy:
+        st.subheader("Drug Combination Synergy Engine (Chou-Talalay Theorem)")
+
+        st.markdown(r"""
+        <div class="academic-guide">
+            <b>Targeting Chemotherapeutic Resistance in Glioblastoma Stem Cells (GSCs):</b><br>
+            Single-agent therapies frequently fail in high-grade gliomas due to redundant signal redundancy and MGMT-mediated alkylation repair. 
+            This engine applies the <b>Chou-Talalay Combination Index ($\text{CI}$) theorem</b> to quantify synergistic enhancement between your novel hit candidate and <b>Temozolomide (TMZ)</b>.
+        </div>
+        """, unsafe_allow_html=True)
+
+        col_syn1, col_syn2 = st.columns(2)
+
+        with col_syn1:
+            st.markdown("##### 1. Single Monotherapy Potencies ($\text{IC}_{50}$)")
+            default_candidate_ic50 = st.session_state.get("ic50", 0.4812)
+            ic50_drug1 = st.number_input(
+                "Candidate Hit Monotherapy IC50 (µM):",
+                value=float(default_candidate_ic50),
+                min_value=0.0001,
+                format="%.4f",
+            )
+            ic50_tmz = st.number_input(
+                "Temozolomide (TMZ) Control Monotherapy IC50 (µM):",
+                value=45.0,
+                min_value=0.1,
+                format="%.1f",
+            )
+
+        with col_syn2:
+            st.markdown("##### 2. Combination Doses Yielding 50% Tumor Kill")
+            combo_d1 = st.number_input(
+                "Candidate Dose in Combination (µM):",
+                value=float(ic50_drug1 * 0.25),
+                min_value=0.0001,
+                format="%.4f",
+            )
+            combo_d2 = st.number_input(
+                "TMZ Dose in Combination (µM):",
+                value=10.0,
+                min_value=0.1,
+                format="%.1f",
+            )
+
+        # Chou-Talalay Non-Mutually Exclusive / Mutually Exclusive Equation
+        ci_val = (combo_d1 / ic50_drug1) + (combo_d2 / ic50_tmz)
+
+        st.markdown("---")
+        st.markdown("##### 3. Quantitative Synergy Assessment & Clinical Classification")
+
+        col_res1, col_res2 = st.columns([1, 2])
+
+        with col_res1:
+            st.metric("Combination Index (CI)", f"{ci_val:.3f}")
+
+        with col_res2:
+            if ci_val < 0.7:
+                st.success("Strong Synergy (CI < 0.7): High clinical potential. The combination dramatically enhances tumor killing beyond additive expectations, lowering required systemic doses and defeating TMZ resistance.")
+            elif 0.7 <= ci_val < 0.9:
+                st.info("Moderate Synergy (0.7 <= CI < 0.9): Favorable combination effect. Widens the neuro-oncological therapeutic window.")
+            elif 0.9 <= ci_val <= 1.1:
+                st.warning("Additive Effect (0.9 <= CI <= 1.1): Simple cumulative sum of independent drug responses (1 + 1 = 2).")
+            else:
+                st.error("Antagonistic Effect (CI > 1.1): Drugs actively interfere with each other's catalytic mechanisms (1 + 1 < 2).")
+
+        st.markdown("---")
+
+        # --- MATHEMATICAL PROOF OF CHOU-TALALAY ---
+        st.subheader("Mathematical Proof & Mass-Action Origin of the Synergy Index")
+
+        st.markdown(r"""
+        ##### Derivation from the Median-Effect Principle
+        The **Chou-Talalay Combination Index theorem** is derived from the unified Mass-Action Law equation:
+        $$\frac{f_a}{f_u} = \left(\frac{D}{D_m}\right)^m$$
+
+        Where:
+        * $f_a$: Fraction of tumor cells affected (inhibited).
+        * $f_u$: Fraction of cells unaffected ($1 - f_a$).
+        * $D$: Applied drug dose.
+        * $D_m$: Median-effect dose ($\text{IC}_{50}$).
+        * $m$: Hill-type cooperativity coefficient.
+
+        For a two-drug combination ($D_1$ and $D_2$) producing a given fractional tumor inhibition ($f_a = 0.50$), the general **Combination Index ($\text{CI}$)** equation is expressed as:
+        $$\text{CI} = \frac{(D)_1}{(D_x)_1} + \frac{(D)_2}{(D_x)_2}$$
+
+        Where:
+        * $(D_x)_1$ and $(D_x)_2$ are the individual monotherapy doses required to kill $50\%$ of tumor cells.
+        * $(D)_1$ and $(D)_2$ are the specific doses of each drug required *in combination* to achieve the exact same $50\%$ cell kill.
+
+        ##### Rigorous CI Interpretation Thresholds
+        | Combination Index Range | Mathematical Definition | Biological Outcome in Glioma |
+        | :--- | :--- | :--- |
+        | **$\text{CI} < 0.3$** | **Strong Synergism** | Extreme mutual enhancement; complete pathway collapse. |
+        | **$0.3 - 0.7$** | **Synergism** | Significant dose reduction factor for both agents. |
+        | **$0.7 - 0.9$** | **Moderate Synergism** | Clear therapeutic superiority over monotherapy. |
+        | **$0.9 - 1.1$** | **Nearly Additive** | Independent non-interacting target inhibition. |
+        | **$> 1.1$** | **Antagonism** | Competitive receptor inhibition or pathway neutralization. |
+
+        ##### References & Regulatory Approval
+        1. **Chou, T. C. & Talalay, P. (1984):** *Quantitative analysis of dose-effect relationships: the combined effects of multiple drugs or enzyme inhibitors.* **Adv. Enzyme Regul.** 22:27–55 [PMID: 6382108].
+        2. **Chou, T. C. (2006):** *Theoretical basis, experimental design, and computerized simulation of synergism and antagonism in drug combination studies.* **Pharmacol. Rev.** 58(3):621–681 [PMID: 16968947].
+        """)
+
+    # --------------------------------------------------------------------------
+    # TAB 4: USER GUIDE & BIBLIOGRAPHY
     # --------------------------------------------------------------------------
     with tab_guide:
-        st.subheader("3. Platform User Guide, Value Proposition & Master Academic Library")
+        st.subheader("4. Platform User Guide, Value Proposition & Master Academic Library")
 
         st.markdown("""
         #### **A. Target Audience & Platform Purpose**
         * **Intended Users:** Neuro-oncologists, translational drug discovery scientists, medicinal chemists, and graduate researchers.
-        * **Core Purpose:** The **GBM-Twin Platform** consolidates multi-omic validation, 3D structural docking, 100 ns molecular dynamics, toxicity evaluation, BBB permeability prediction, and cell kinetics into a single open-access workbench.
+        * **Core Purpose:** The **GBM-Twin Platform** consolidates multi-omic validation, 3D structural docking, 100 ns molecular dynamics, toxicity evaluation, BBB permeability prediction, cell kinetics, and drug synergy into a single open-access workbench.
         * **Key Advantages:** Replaces fragmented web tools with an integrated workflow, relying on NIH, TCGA, GTEx, and RCSB PDB datasets.
 
         #### **B. Step-by-Step Workflow**
         1. **Genomic Target Validation (Workstation I):** Verify target transcript upregulation in TCGA GBM ($N=163$) versus GTEx healthy brain controls ($N=207$), evaluate Cox survival Hazard Ratios, and check mutational profiles.
         2. **Structural Docking & Dynamics (Workstation II):** Follow protocols to execute active site docking ($\Delta G \le -6.0\text{ kcal/mol}$) and analyze 100 ns GROMACS trajectory stability (RMSD/RMSF).
         3. **Safety & BBB Permeability (Workstation III):** Evaluate OECD GHS acute toxicity classes, organ toxicity probabilities, and SwissADME BOILED-Egg blood-brain barrier permeability.
-        4. **Invasion & Kinetics (Workstation IV):** Map cell migration pathways via KEGG and fit in vitro dose-response data using 4PL non-linear regression.
+        4. **Invasion, Kinetics & Synergy (Workstation IV):** Map cell migration pathways via KEGG, fit in vitro dose-response data using 4PL non-linear regression, and calculate Chou-Talalay drug synergy indices.
 
         ---
 
-        #### **C. Automated Thesis Results Exporter**
-        """)
-
-        ic50_v = st.session_state.get("ic50", 0.4812)
-        r2_v = st.session_state.get("r2", 0.9841)
-        hill_v = st.session_state.get("hill", 1.42)
-
-        p_text = f"In vitro cytotoxic profiling across {active_cell_line} glioblastoma cell lines demonstrated strong, dose-dependent anti-tumor activity. Non-linear regression fitting using the 4-Parameter Logistic (4PL) model yielded a half-maximal inhibitory concentration (IC50) value of {ic50_v:.4f} µM (R² = {r2_v:.4f}, Hill slope b = {hill_v:.2f}). This sub-micromolar potency represents a significant improvement over standard Temozolomide controls (IC50 > 50 µM), establishing the candidate molecule as a potent therapeutic hit for further preclinical neuro-oncology optimization."
-
-        st.code(p_text, language="text")
-
-        st.markdown("---")
-        st.markdown("#### **D. Free Open-Access Tools, Web Servers & Databases**")
-        st.markdown("""
+        #### **C. Free Open-Access Tools, Web Servers & Databases**
         * **ProTox 3.0 Virtual Lab:** `tox.charite.de/protox3`
         * **SwissADME Informatics:** `swissadme.ch`
         * **CB-Dock2 Active Site Docking:** `cbdock2.labshare.cn`
@@ -1524,10 +1618,11 @@ elif (
         * **RCSB Protein Data Bank:** `rcsb.org`
         * **KEGG Pathway Database:** `kegg.jp`
         * **NCBI PubChem Database:** `pubchem.ncbi.nlm.nih.gov`
-        """)
 
-        st.markdown("---")
-        st.markdown("#### **E. Complete BibTeX Master Repository**")
+        ---
+
+        #### **D. Complete BibTeX Master Repository**
+        """)
 
         bibtex_code = """@article{banerjee2024protox,
   title={ProTox 3.0: a webserver for the prediction of toxicities of small molecules},
@@ -1549,6 +1644,17 @@ elif (
   pages={1117--1121},
   year={2016},
   doi={10.1002/cmdc.201600182}
+}
+
+@article{chou2006theoretical,
+  title={Theoretical basis, experimental design, and computerized simulation of synergism and antagonism in drug combination studies},
+  author={Chou, Ting-Chao},
+  journal={Pharmacological Reviews},
+  volume={58},
+  number={3},
+  pages={621--681},
+  year={2006},
+  doi={10.1124/pr.58.3.10}
 }
 
 @article{sebaugh2011guidelines,
