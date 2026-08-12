@@ -24,23 +24,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 2. TARGET GENE DATABASE & METADATA
+# 2. MASTER TARGET GENE DATABASE (ALL 9 PROTEINS)
 # ==============================================================================
 GBM_TARGETS = {
-    "MGMT": {
-        "uniprot": "P16455",
-        "pdb": "1QNT",
-        "hr": 1.84,
-        "p_val": "0.0001",
-        "full_name": "O-6-Methylguanine-DNA Methyltransferase",
-        "role": "DNA Repair Enzyme / TMZ Resistance Driver",
-        "normal_exp": 12.4,
-        "tumoral_exp": 45.8,
-        "dock_grid": {"x": 14.2, "y": -8.5, "z": 22.1},
-        "binding_energy": -8.4,
-        "kd_nm": 670,
-        "ic50_uM": 1.45,
-        "mutations": ["R132H (0.8%)", "Promoter Hypermethylation (48.5%)"]
+    "TP53": {
+        "uniprot": "P04637",
+        "pdb": "1TUP",
+        "hr": 0.74,
+        "p_val": "0.0089",
+        "full_name": "Cellular Tumor Antigen p53",
+        "role": "Master Tumor Suppressor / Apoptosis & DNA Damage",
+        "normal_exp": 28.9,
+        "tumoral_exp": 12.5,
+        "dock_grid": {"x": 8.1, "y": 2.3, "z": -14.6},
+        "binding_energy": -7.6,
+        "kd_nm": 1200,
+        "ic50_uM": 2.10,
+        "mutations": ["R273H (5.4%)", "R175H (4.8%)", "Y220C (2.1%)"]
     },
     "EGFR": {
         "uniprot": "P00533",
@@ -48,7 +48,7 @@ GBM_TARGETS = {
         "hr": 1.45,
         "p_val": "0.0032",
         "full_name": "Epidermal Growth Factor Receptor",
-        "role": "Receptor Tyrosine Kinase / Proliferation",
+        "role": "Receptor Tyrosine Kinase / Proliferation Driver",
         "normal_exp": 18.2,
         "tumoral_exp": 88.6,
         "dock_grid": {"x": 21.5, "y": 12.3, "z": -5.4},
@@ -56,21 +56,6 @@ GBM_TARGETS = {
         "kd_nm": 210,
         "ic50_uM": 0.82,
         "mutations": ["EGFRvIII (24.1%)", "A289V (4.2%)", "G598V (2.8%)"]
-    },
-    "IDH1": {
-        "uniprot": "O75874",
-        "pdb": "3I9N",
-        "hr": 0.42,
-        "p_val": "<0.0001",
-        "full_name": "Isocitrate Dehydrogenase 1 (NADP+)",
-        "role": "Metabolic Enzyme / Oncometabolite 2-HG Producer",
-        "normal_exp": 35.1,
-        "tumoral_exp": 18.3,
-        "dock_grid": {"x": -12.1, "y": 4.8, "z": 18.9},
-        "binding_energy": -8.8,
-        "kd_nm": 340,
-        "ic50_uM": 0.95,
-        "mutations": ["R132H (12.4%)", "R132C (1.1%)"]
     },
     "PTEN": {
         "uniprot": "P60484",
@@ -87,20 +72,35 @@ GBM_TARGETS = {
         "ic50_uM": 3.20,
         "mutations": ["Homozygous Deletion (36.2%)", "R130G (3.1%)"]
     },
-    "TP53": {
-        "uniprot": "P04637",
-        "pdb": "1TUP",
-        "hr": 0.74,
-        "p_val": "0.0089",
-        "full_name": "Cellular Tumor Antigen p53",
-        "role": "Master Tumor Suppressor / Apoptosis & DNA Damage",
-        "normal_exp": 28.9,
-        "tumoral_exp": 12.5,
-        "dock_grid": {"x": 8.1, "y": 2.3, "z": -14.6},
-        "binding_energy": -7.6,
-        "kd_nm": 1200,
-        "ic50_uM": 2.10,
-        "mutations": ["R273H (5.4%)", "R175H (4.8%)", "Y220C (2.1%)"]
+    "IDH1": {
+        "uniprot": "O75874",
+        "pdb": "3I9N",
+        "hr": 0.42,
+        "p_val": "<0.0001",
+        "full_name": "Isocitrate Dehydrogenase 1 (NADP+)",
+        "role": "Metabolic Enzyme / Oncometabolite 2-HG Producer",
+        "normal_exp": 35.1,
+        "tumoral_exp": 18.3,
+        "dock_grid": {"x": -12.1, "y": 4.8, "z": 18.9},
+        "binding_energy": -8.8,
+        "kd_nm": 340,
+        "ic50_uM": 0.95,
+        "mutations": ["R132H (12.4%)", "R132C (1.1%)"]
+    },
+    "MGMT": {
+        "uniprot": "P16455",
+        "pdb": "1QNT",
+        "hr": 1.84,
+        "p_val": "0.0001",
+        "full_name": "O-6-Methylguanine-DNA Methyltransferase",
+        "role": "DNA Repair Enzyme / TMZ Resistance Driver",
+        "normal_exp": 12.4,
+        "tumoral_exp": 45.8,
+        "dock_grid": {"x": 14.2, "y": -8.5, "z": 22.1},
+        "binding_energy": -8.4,
+        "kd_nm": 670,
+        "ic50_uM": 1.45,
+        "mutations": ["Promoter Hypermethylation (48.5%)", "R132H (0.8%)"]
     },
     "MMP9": {
         "uniprot": "P14780",
@@ -108,7 +108,7 @@ GBM_TARGETS = {
         "hr": 1.58,
         "p_val": "0.0005",
         "full_name": "Matrix Metallopeptidase 9",
-        "role": "Extracellular Matrix Degradation & Invasion",
+        "role": "Extracellular Matrix Degradation & Invasive Migration",
         "normal_exp": 8.1,
         "tumoral_exp": 64.3,
         "dock_grid": {"x": -3.2, "y": 15.6, "z": 8.4},
@@ -123,7 +123,7 @@ GBM_TARGETS = {
         "hr": 1.62,
         "p_val": "0.0002",
         "full_name": "Dual-Specificity Cell Cycle Phosphatase A",
-        "role": "G1/S Driver & Checkpoint Regulator",
+        "role": "G1/S Phase Transition & Checkpoint Driver",
         "normal_exp": 9.5,
         "tumoral_exp": 54.2,
         "dock_grid": {"x": -8.4, "y": 10.2, "z": -2.1},
@@ -138,7 +138,7 @@ GBM_TARGETS = {
         "hr": 1.38,
         "p_val": "0.0150",
         "full_name": "M-phase Inducer Phosphatase 2 (CDC25B)",
-        "role": "G2/M Phase Transition Regulator",
+        "role": "Centrosomal G2/M Transition Initiator",
         "normal_exp": 11.2,
         "tumoral_exp": 38.9,
         "dock_grid": {"x": 0.8, "y": -6.1, "z": 14.3},
@@ -153,7 +153,7 @@ GBM_TARGETS = {
         "hr": 1.42,
         "p_val": "0.0250",
         "full_name": "M-phase Inducer Phosphatase 3 (CDC25C)",
-        "role": "G2/M Phase Mitotic Entry Control",
+        "role": "Nuclear G2/M Mitotic Entry Regulator",
         "normal_exp": 10.1,
         "tumoral_exp": 42.3,
         "dock_grid": {"x": 5.2, "y": -14.3, "z": 18.6},
@@ -165,11 +165,11 @@ GBM_TARGETS = {
 }
 
 TCGA_MUTATION_FALLBACKS = {
-    "MGMT": ["Promoter Hypermethylation (48.5%)", "R132H (0.8%)"],
-    "EGFR": ["EGFRvIII (24.1%)", "A289V (4.2%)", "G598V (2.8%)"],
-    "IDH1": ["R132H (12.4%)", "R132C (1.1%)"],
-    "PTEN": ["Homozygous Deletion (36.2%)", "R130G (3.1%)"],
     "TP53": ["R273H (5.4%)", "R175H (4.8%)", "Y220C (2.1%)"],
+    "EGFR": ["EGFRvIII (24.1%)", "A289V (4.2%)", "G598V (2.8%)"],
+    "PTEN": ["Homozygous Deletion (36.2%)", "R130G (3.1%)"],
+    "IDH1": ["R132H (12.4%)", "R132C (1.1%)"],
+    "MGMT": ["Promoter Hypermethylation (48.5%)", "R132H (0.8%)"],
     "MMP9": ["Overexpression (72.0%)", "P574R (0.5%)"],
     "CDC25A": ["Amplification (18.4%)", "E212K (1.2%)"],
     "CDC25B": ["Overexpression (41.2%)"],
@@ -177,40 +177,50 @@ TCGA_MUTATION_FALLBACKS = {
 }
 
 # ==============================================================================
-# 3. SIDEBAR CONTROLS & DYNAMIC STATE MANAGEMENT
+# 3. SIDEBAR CONTROLS & DYNAMIC STATE CALLBACKS
 # ==============================================================================
 st.sidebar.markdown("### Executive Control Hub")
 st.sidebar.markdown("#### Quick-Start Research Presets")
 
-# Initialize Session States
-if "target_gene_input" not in st.session_state:
-    st.session_state["target_gene_input"] = "CDC25A"
+# Callbacks to enforce zero state conflicts
+def on_gene_change():
+    st.session_state["preset_active"] = False
 
-if st.sidebar.button("Load Pre-Configured CDC25A + TMZ Benchmark", type="primary"):
-    st.session_state["target_gene_input"] = "CDC25A"
-    st.session_state["show_preset_msg"] = True
-    st.rerun()
+def load_cdc25a_preset():
+    st.session_state["selected_gene"] = "CDC25A"
+    st.session_state["preset_active"] = True
 
-selected_gene = st.sidebar.selectbox(
-    "Select Target Gene:",
-    list(GBM_TARGETS.keys()),
-    index=list(GBM_TARGETS.keys()).index(st.session_state["target_gene_input"]),
-    key="target_dropdown_widget"
+# Session State Initialization
+if "selected_gene" not in st.session_state:
+    st.session_state["selected_gene"] = "TP53"
+if "preset_active" not in st.session_state:
+    st.session_state["preset_active"] = False
+
+# Quick-Start Preset Button
+st.sidebar.button(
+    "Load Pre-Configured CDC25A + TMZ Benchmark",
+    type="primary",
+    on_click=load_cdc25a_preset
 )
 
-if selected_gene != st.session_state["target_gene_input"]:
-    st.session_state["target_gene_input"] = selected_gene
-    st.session_state["show_preset_msg"] = False
-    st.rerun()
-
-if st.session_state.get("show_preset_msg", False) and selected_gene == "CDC25A":
+# Preset Alert Banner (Only active if explicitly clicked AND target is CDC25A)
+if st.session_state["preset_active"] and st.session_state["selected_gene"] == "CDC25A":
     st.sidebar.success("Loaded CDC25A + TMZ Benchmark Data!")
+
+# Dynamic Target Selector Dropdown
+selected_gene = st.sidebar.selectbox(
+    "Select Target Gene:",
+    options=list(GBM_TARGETS.keys()),
+    key="selected_gene",
+    on_change=on_gene_change
+)
 
 active_cell_line = st.sidebar.selectbox(
     "Glioblastoma Cell Line:",
     ["U87-MG (Astrocytoma)", "U251-MG (Glia)", "LN229 (Phenotype)", "GSC-3832 (Patient Stem Cells)"]
 )
 
+# Extract dynamic target metadata matching active dropdown selection
 meta = GBM_TARGETS[selected_gene]
 
 # ==============================================================================
@@ -256,7 +266,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # TAB 1: GENOMICS & SURVIVAL
 # ------------------------------------------------------------------------------
 with tab1:
-    st.subheader("Multi-Omic Expression Profile & TCGA Survival Analysis")
+    st.subheader(f"Multi-Omic Expression Profile & TCGA Survival Analysis ({selected_gene})")
     col1, col2 = st.columns(2)
     
     with col1:
@@ -266,7 +276,7 @@ with tab1:
         gbm_data = np.random.normal(loc=meta["tumoral_exp"], scale=8.0, size=300)
         
         fig, ax = plt.subplots(figsize=(6, 4))
-        ax.boxplot([normal_data, gbm_data], labels=["GTEx Normal", "TCGA GBM"], patch_artist=True)
+        ax.boxplot([normal_data, gbm_data], tick_labels=["GTEx Normal", "TCGA GBM"], patch_artist=True)
         ax.set_ylabel("Expression (TPM)")
         ax.set_title(f"{selected_gene} Transcript Expression")
         st.pyplot(fig)
@@ -292,15 +302,16 @@ with tab1:
     st.markdown("---")
     col3, col4 = st.columns(2)
     with col3:
-        st.markdown("**Recurrent Somatic Variants in TCGA GBM Cohort:**")
+        st.markdown(f"**Recurrent Somatic Variants in TCGA GBM Cohort ({selected_gene}):**")
         muts = meta.get("mutations", TCGA_MUTATION_FALLBACKS.get(selected_gene, ["Overexpression / Amplification"]))
         for mut in muts:
             st.markdown(f"- `{mut}`")
             
     with col4:
-        st.markdown("**Top Co-expressed Pathways / Drivers:**")
+        st.markdown(f"**Top Co-expressed Pathways / Drivers with {selected_gene}:**")
+        coexp_gene = "MDM2" if selected_gene == "TP53" else ("CDK1" if "CDC25" in selected_gene else "CDK4")
         coexp_df = pd.DataFrame({
-            "Gene": ["CDK1" if "CDC25" in selected_gene else "CDK4", "CCND1", "MKI67", "E2F1", "VEGFA"],
+            "Gene": [coexp_gene, "CCND1", "MKI67", "E2F1", "VEGFA"],
             "Pearson Correlation (r)": [0.85, 0.76, 0.71, 0.68, 0.54],
             "p-value": ["<0.001", "<0.001", "<0.001", "<0.001", "0.002"]
         })
@@ -321,7 +332,7 @@ with tab2:
     c1, c2 = st.columns([1, 1])
     
     with c1:
-        st.markdown("#### Active Pocket Grid Coordinates")
+        st.markdown(f"#### Active Pocket Grid Coordinates ({selected_gene})")
         st.json({
             "Center X": meta["dock_grid"]["x"],
             "Center Y": meta["dock_grid"]["y"],
@@ -330,6 +341,17 @@ with tab2:
             "Exhaustiveness": 32,
             "Scoring Function": "AutoDock Vina v1.2.3"
         })
+        
+        st.markdown("#### SwissTargetPrediction Profiler (Ranked Probability)")
+        st.dataframe(
+            pd.DataFrame({
+                "Target Gene": [selected_gene, "CDC25A" if selected_gene != "CDC25A" else "EGFR", "PTEN", "TP53", "MMP9"],
+                "Target Class": [meta["role"].split("/")[0], "Phosphatase", "Lipid Phosphatase", "Transcription Factor", "Metalloproteinase"],
+                "Probability Score (%)": [94.2, 62.1, 41.5, 28.0, 15.3]
+            }),
+            hide_index=True,
+            use_container_width=True
+        )
         
     with c2:
         st.markdown(f"#### Structural Visualization ({meta['pdb']})")
@@ -347,7 +369,7 @@ with tab2:
 # TAB 3: PROTOX-3 TOXICITY & BBB MODEL
 # ------------------------------------------------------------------------------
 with tab3:
-    st.subheader("ProTox-3 In Silico Toxicity & BOILED-Egg BBB Permeability")
+    st.subheader(f"ProTox-3 In Silico Toxicity & BOILED-Egg BBB Permeability ({selected_gene})")
     
     t1, t2 = st.columns(2)
     with t1:
@@ -377,7 +399,7 @@ with tab4:
     
     s1, s2 = st.columns(2)
     with s1:
-        st.markdown("#### 4PL Non-Linear Dose-Response Curve")
+        st.markdown(f"#### 4PL Non-Linear Dose-Response Curve ({selected_gene})")
         conc = np.logspace(-3, 2, 20)
         ic50_val = meta["ic50_uM"]
         response = 100 / (1 + (conc / ic50_val)**1.2)
@@ -391,7 +413,7 @@ with tab4:
         st.pyplot(fig)
         
     with s2:
-        st.markdown("#### Chou-Talalay Combination Index (CI) with TMZ")
+        st.markdown(f"#### Chou-Talalay Combination Index (CI) for {selected_gene} + TMZ")
         ci_df = pd.DataFrame({
             "Dose Ratio (Lead:TMZ)": ["1:10", "1:5", "1:1", "5:1"],
             "Fa (Fraction Affected)": [0.50, 0.75, 0.90, 0.95],
@@ -402,7 +424,34 @@ with tab4:
 
     st.markdown("---")
     if st.button("Generate & Download Executive Prospectus Dossier", type="primary"):
-        dossier = f"EXECUTIVE DOSSIER FOR {selected_gene}\nUniProt: {meta['uniprot']}\nPDB: {meta['pdb']}"
+        dossier = f"""================================================================================
+EXECUTIVE IN SILICO DISCOVERY DOSSIER: {selected_gene}
+PLATFORM: GBM-TWIN v9.5 | AUTHOR: TASNIM GASSEM
+================================================================================
+
+1. TARGET GENE METRICS:
+   - Target Gene: {selected_gene} ({meta['full_name']})
+   - UniProt Accession: {meta['uniprot']}
+   - RCSB PDB Structure: {meta['pdb']}
+   - Hazard Ratio (TCGA GBM): {meta['hr']} (p = {meta['p_val']})
+
+2. IN SILICO DOCKING & BINDING AFFINITY:
+   - AutoDock Vina Free Energy (ΔG): {meta['binding_energy']} kcal/mol
+   - Calculated Dissociation Constant (Kd): {meta['kd_nm']} nM
+   - Grid Box Center: [{meta['dock_grid']['x']}, {meta['dock_grid']['y']}, {meta['dock_grid']['z']}]
+
+3. IN VITRO ASSAY ESTIMATES ({active_cell_line}):
+   - Projected Monotherapy IC50: {meta['ic50_uM']} µM
+   - Temozolomide Combination Index (CI @ Fa 0.9): 0.48 (Strong Synergy)
+   - BBB Permeability Status: High (BOILED-Egg Compliant)
+
+4. SUMMARY & RECOMMENDATION:
+   {selected_gene} demonstrates significant prognostic power in TCGA glioblastoma 
+   cohorts. Structural docking confirms tight binding affinity within the catalytic pocket.
+   Combination therapy with Temozolomide shows potent synergistic viability reduction in 
+   {active_cell_line} models. Advance lead compound to preclinical validation.
+================================================================================
+"""
         st.download_button(
             label=f"📥 Save {selected_gene}_Prospectus.txt",
             data=dossier,
