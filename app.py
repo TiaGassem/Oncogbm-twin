@@ -430,6 +430,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 # ==============================================================================
 # 5. REST API & COMPUTATIONAL ENGINES
 # ==============================================================================
@@ -520,9 +521,24 @@ def fetch_gbm_kegg_pathways(gene_symbol: str) -> list:
         if response.status_code == 200 and response.text.strip():
             lines = response.text.strip().split("\n")
             gbm_keywords = [
-                "glioma", "cancer", "migration", "invasion", "adhesion",
-                "focal", "mtor", "mapk", "pi3k", "wnt", "erbb", "p53",
-                "tgf-beta", "egfr", "akt", "ras", "extracellular matrix", "jak-stat"
+                "glioma",
+                "cancer",
+                "migration",
+                "invasion",
+                "adhesion",
+                "focal",
+                "mtor",
+                "mapk",
+                "pi3k",
+                "wnt",
+                "erbb",
+                "p53",
+                "tgf-beta",
+                "egfr",
+                "akt",
+                "ras",
+                "extracellular matrix",
+                "jak-stat",
             ]
             for line in lines:
                 parts = line.split("\t")
@@ -604,6 +620,7 @@ def fetch_cbioportal_gbm_mutations(gene_symbol: str) -> dict:
         "variants": fallback_variants,
     }
 
+
 # ==============================================================================
 # 6. GRAPHICAL PLOTTING ENGINES
 # ==============================================================================
@@ -631,7 +648,9 @@ def plot_kaplan_meier_survival(gene_symbol: str, hr: float, p_val: float):
         label=f"Low {gene_symbol} Expression",
     )
 
-    ax.set_xlabel("Overall Survival Time (Months)", fontsize=9, fontweight="bold")
+    ax.set_xlabel(
+        "Overall Survival Time (Months)", fontsize=9, fontweight="bold"
+    )
     ax.set_ylabel("Survival Probability (%)", fontsize=9, fontweight="bold")
     ax.set_title(
         f"Kaplan-Meier Overall Survival: {gene_symbol} (TCGA GBM Cohort)",
@@ -647,12 +666,16 @@ def plot_kaplan_meier_survival(gene_symbol: str, hr: float, p_val: float):
         f"Hazard Ratio (HR) = {hr:.2f}\nLog-rank p-value = {p_val:.4f}",
         fontsize=8.5,
         fontweight="bold",
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1),
+        bbox=dict(
+            boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1
+        ),
     )
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
+    ax.legend(
+        loc="upper right", frameon=True, facecolor="white", fontsize=8
+    )
     plt.tight_layout()
     return fig
 
@@ -676,7 +699,9 @@ def plot_gene_expression_comparison(gene_symbol: str, base_expr: float):
     for median in bp["medians"]:
         median.set(color="#0F172A", linewidth=2)
 
-    ax.set_ylabel("Gene Expression log2(TPM + 1)", fontsize=9, fontweight="bold")
+    ax.set_ylabel(
+        "Gene Expression log2(TPM + 1)", fontsize=9, fontweight="bold"
+    )
     ax.set_title(
         f"Differential Expression: {gene_symbol} (GBM vs GTEx)",
         fontsize=10,
@@ -707,21 +732,28 @@ def plot_coexpression_matrix():
 
     ax.set_xticks(range(len(genes)))
     ax.set_yticks(range(len(genes)))
-    ax.set_xticklabels(genes, rotation=45, ha="left", fontsize=8, fontweight="bold")
+    ax.set_xticklabels(
+        genes, rotation=45, ha="left", fontsize=8, fontweight="bold"
+    )
     ax.set_yticklabels(genes, fontsize=8, fontweight="bold")
 
     for i in range(len(genes)):
         for j in range(len(genes)):
             ax.text(
-                j, i, f"{matrix[i, j]:.2f}",
-                ha="center", va="center",
+                j,
+                i,
+                f"{matrix[i, j]:.2f}",
+                ha="center",
+                va="center",
                 color="black" if abs(matrix[i, j]) < 0.6 else "white",
                 fontsize=7.5,
             )
 
     ax.set_title(
         "Biomarker Co-Expression Correlation (Pearson r)",
-        fontsize=10, fontweight="bold", pad=25,
+        fontsize=10,
+        fontweight="bold",
+        pad=25,
     )
     plt.tight_layout()
     return fig
@@ -734,10 +766,18 @@ def plot_md_trajectory_rmsd_rmsf():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.8))
 
     ax1.plot(time_ns, rmsd, color="#0284C7", linewidth=1.5)
-    ax1.axhline(1.7, color="#DC2626", linestyle="--", alpha=0.7, label="Equilibrium Threshold (< 2.0 Å)")
+    ax1.axhline(
+        1.7,
+        color="#DC2626",
+        linestyle="--",
+        alpha=0.7,
+        label="Equilibrium Threshold (< 2.0 Å)",
+    )
     ax1.set_xlabel("MD Simulation Time (ns)", fontsize=9, fontweight="bold")
     ax1.set_ylabel("Cα Backbone RMSD (Å)", fontsize=9, fontweight="bold")
-    ax1.set_title("100 ns Complex Stability (RMSD)", fontsize=10, fontweight="bold")
+    ax1.set_title(
+        "100 ns Complex Stability (RMSD)", fontsize=10, fontweight="bold"
+    )
     ax1.grid(True, linestyle="--", alpha=0.2)
     ax1.legend(loc="lower right", fontsize=8)
 
@@ -746,10 +786,14 @@ def plot_md_trajectory_rmsd_rmsf():
     rmsf[120:140] += 1.6
 
     ax2.plot(residues, rmsf, color="#0369A1", linewidth=1.5)
-    ax2.axvspan(120, 140, color="#FEF08A", alpha=0.6, label="Binding Active Pocket Loop")
+    ax2.axvspan(
+        120, 140, color="#FEF08A", alpha=0.6, label="Binding Active Pocket Loop"
+    )
     ax2.set_xlabel("Residue Position", fontsize=9, fontweight="bold")
     ax2.set_ylabel("Cα RMSF Fluctuation (Å)", fontsize=9, fontweight="bold")
-    ax2.set_title("Residue Flexibility Profile (RMSF)", fontsize=10, fontweight="bold")
+    ax2.set_title(
+        "Residue Flexibility Profile (RMSF)", fontsize=10, fontweight="bold"
+    )
     ax2.grid(True, linestyle="--", alpha=0.2)
     ax2.legend(loc="upper right", fontsize=8)
 
@@ -761,19 +805,39 @@ def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(7.0, 4.2))
     ax.set_xlim(0, 160)
     ax.set_ylim(-2, 6)
-    ax.set_xlabel("TPSA (Topological Polar Surface Area, Å²)", fontsize=9, fontweight="bold")
+    ax.set_xlabel(
+        "TPSA (Topological Polar Surface Area, Å²)",
+        fontsize=9,
+        fontweight="bold",
+    )
     ax.set_ylabel("WLOGP (Lipophilicity)", fontsize=9, fontweight="bold")
-    ax.set_title("SwissADME BOILED-Egg BBB Permeability Predictor", fontsize=10, fontweight="bold", pad=12)
+    ax.set_title(
+        "SwissADME BOILED-Egg BBB Permeability Predictor",
+        fontsize=10,
+        fontweight="bold",
+        pad=12,
+    )
 
     hia_ellipse = patches.Ellipse(
-        (72, 1.8), width=105, height=5.2, angle=-10,
-        facecolor="#FEF08A", edgecolor="#EAB308", alpha=0.5,
+        (72, 1.8),
+        width=105,
+        height=5.2,
+        angle=-10,
+        facecolor="#FEF08A",
+        edgecolor="#EAB308",
+        alpha=0.5,
         label="HIA Zone (Intestinal Absorption)",
     )
     ax.add_patch(hia_ellipse)
     bbb_ellipse = patches.Ellipse(
-        (38, 2.1), width=58, height=3.2, angle=-10,
-        facecolor="#FFFFFF", edgecolor="#0284C7", linewidth=1.5, alpha=0.9,
+        (38, 2.1),
+        width=58,
+        height=3.2,
+        angle=-10,
+        facecolor="#FFFFFF",
+        edgecolor="#0284C7",
+        linewidth=1.5,
+        alpha=0.9,
         label="BBB Permeable Zone (Brain Tumors)",
     )
     ax.add_patch(bbb_ellipse)
@@ -785,18 +849,36 @@ def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
         color = "#0369A1" if is_bbb == "BBB+" else "#DC2626"
         marker_label = markers[idx % len(markers)]
 
-        ax.scatter(tpsa, wlogp, color=color, s=110, zorder=5, edgecolors="#0F172A", linewidth=1.0)
+        ax.scatter(
+            tpsa,
+            wlogp,
+            color=color,
+            s=110,
+            zorder=5,
+            edgecolors="#0F172A",
+            linewidth=1.0,
+        )
         y_offset = 0.25 if idx % 2 == 0 else -0.35
         ax.annotate(
             f"[{marker_label}] {row['Compound']}",
             (tpsa + 2, wlogp + y_offset),
-            fontsize=8, fontweight="bold", color="#0F172A",
-            bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color, lw=1, alpha=0.85),
+            fontsize=8,
+            fontweight="bold",
+            color="#0F172A",
+            bbox=dict(
+                boxstyle="round,pad=0.2",
+                fc="white",
+                ec=color,
+                lw=1,
+                alpha=0.85,
+            ),
         )
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
+    ax.legend(
+        loc="upper right", frameon=True, facecolor="white", fontsize=8
+    )
     plt.tight_layout()
     return fig
 
@@ -806,30 +888,53 @@ def four_parameter_logistic(x, a, b, c, d):
 
 
 def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
-    x, y = np.array(concentrations_uM, dtype=float), np.array(viability_pct, dtype=float)
+    x, y = np.array(concentrations_uM, dtype=float), np.array(
+        viability_pct, dtype=float
+    )
     p0 = [min(y), 1.0, np.median(x), max(y)]
     bounds = ([0.0, 0.1, 1e-6, 0.0], [100.0, 10.0, max(x) * 10, 150.0])
     try:
         popt, _ = curve_fit(
-            four_parameter_logistic, x, y, p0=p0, bounds=bounds, maxfev=10000
+            four_parameter_logistic,
+            x,
+            y,
+            p0=p0,
+            bounds=bounds,
+            maxfev=10000,
         )
         a, b, c, d = popt
         residuals = y - four_parameter_logistic(x, *popt)
         r_squared = 1 - (np.sum(residuals**2) / np.sum((y - np.mean(y)) ** 2))
 
         fig, ax = plt.subplots(figsize=(6.5, 3.6))
-        x_dense = np.logspace(np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300)
-        ax.scatter(x, y, color="#0369A1", label="Experimental Data", zorder=4, s=50, edgecolors="#0F172A", linewidth=1.0)
+        x_dense = np.logspace(
+            np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300
+        )
+        ax.scatter(
+            x,
+            y,
+            color="#0369A1",
+            label="Experimental Data",
+            zorder=4,
+            s=50,
+            edgecolors="#0F172A",
+            linewidth=1.0,
+        )
         ax.plot(
-            x_dense, four_parameter_logistic(x_dense, a, b, c, d),
-            color="#DC2626", linestyle="--", linewidth=2.0,
+            x_dense,
+            four_parameter_logistic(x_dense, a, b, c, d),
+            color="#DC2626",
+            linestyle="--",
+            linewidth=2.0,
             label=f"4PL Fit (IC50 = {c:.4f} µM)",
         )
         ax.axhline(50, color="#94A3B8", linestyle=":", alpha=0.8)
         ax.set_xscale("log")
         ax.set_xlabel("Concentration (µM)", fontsize=9, fontweight="bold")
         ax.set_ylabel("Viability (%)", fontsize=9, fontweight="bold")
-        ax.set_title("In Vitro 4PL Dose-Response Fit", fontsize=10, fontweight="bold")
+        ax.set_title(
+            "In Vitro 4PL Dose-Response Fit", fontsize=10, fontweight="bold"
+        )
         ax.legend(frameon=True, facecolor="#F8FAFC", fontsize=8)
         ax.grid(True, which="both", alpha=0.15)
         plt.tight_layout()
@@ -842,6 +947,7 @@ def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
+
 
 # ==============================================================================
 # 7. WORKSTATIONS ARCHITECTURE
@@ -863,15 +969,21 @@ st.markdown("---")
 # WORKSTATION I
 # ------------------------------------------------------------------------------
 if master_module == "Workstation I: Genomic & Survival Analytics":
-    st.markdown(f'<div class="section-title">Workstation I: Genomic & Survival Validation ({selected_gene})</div>', unsafe_allow_html=True)
-    
+    st.markdown(
+        f'<div class="section-title">Workstation I: Genomic & Survival Validation ({selected_gene})</div>',
+        unsafe_allow_html=True,
+    )
+
     col1, col2 = st.columns(2)
     with col1:
         st.pyplot(plot_gene_expression_comparison(selected_gene, meta["base_expr"]))
     with col2:
         st.pyplot(plot_kaplan_meier_survival(selected_gene, meta["hr"], meta["p_val"]))
 
-    st.markdown('<div class="section-title">Co-Expression Matrix & Mutation Landscape</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-title">Co-Expression Matrix & Mutation Landscape</div>',
+        unsafe_allow_html=True,
+    )
     col3, col4 = st.columns([1.2, 1])
     with col3:
         st.pyplot(plot_coexpression_matrix())
@@ -886,14 +998,20 @@ if master_module == "Workstation I: Genomic & Survival Analytics":
 # WORKSTATION II
 # ------------------------------------------------------------------------------
 elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
-    st.markdown(f'<div class="section-title">Workstation II: Structural Docking & 100 ns MD Dynamics</div>', unsafe_allow_html=True)
-    
-    st.markdown(r"""
+    st.markdown(
+        f'<div class="section-title">Workstation II: Structural Docking & 100 ns MD Dynamics</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        r"""
     <div class="academic-guide">
         <b>Thermodynamic Hit Selection Criteria:</b> Active-site screening requires a Gibbs Free Energy threshold of $\Delta G \le -6.0\text{ kcal/mol}$ 
         (corresponding to a dissociation constant $K_d \le 40\ \mu\text{M}$ at $310.15\text{ K}$) and hydrogen-bond donor-acceptor distances $\le 3.2\text{ \AA}$.
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     col1, col2 = st.columns([1, 2])
     with col1:
@@ -902,7 +1020,7 @@ elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
         temp = 310.15  # Body Temperature (K)
         r_const = 0.0019872042  # kcal/(mol·K)
         kd_uM = np.exp(dg / (r_const * temp)) * 1e6
-        
+
         st.metric("Calculated Dissociation Constant (Kd)", f"{kd_uM:.3f} µM")
         if dg <= -6.0:
             st.success("Passes High-Affinity Binding Cutoff (ΔG ≤ -6.0 kcal/mol)")
@@ -916,10 +1034,13 @@ elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
 # WORKSTATION III
 # ------------------------------------------------------------------------------
 elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
-    st.markdown('<div class="section-title">Workstation III: ProTox-3 Toxicity & ADMET BBB Predictor</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-title">Workstation III: ProTox-3 Toxicity & ADMET BBB Predictor</div>',
+        unsafe_allow_html=True,
+    )
 
     res_props = fetch_compound_all_properties(quick_smiles)
-    
+
     if res_props.get("status") == "success":
         col1, col2 = st.columns([1, 1.5])
         with col1:
@@ -928,23 +1049,29 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
             st.write(f"**Molecular Weight:** {res_props.get('MolecularWeight')} g/mol")
             st.write(f"**TPSA:** {res_props.get('TPSA')} Å²")
             st.write(f"**WLOGP:** {res_props.get('XLogP')}")
-            
+
             # Toxicity Lookup
             canonical_smiles = res_props.get("CanonicalSMILES", quick_smiles)
             tox_data = PROTOX_BENCHMARKS.get(canonical_smiles, DEFAULT_PROTOX)
             ghs = classify_ghs_acute_toxicity(tox_data["ld50"])
-            
+
             st.markdown("---")
             st.markdown("#### ProTox-3 Toxicity Profile")
             st.metric("Estimated Oral LD50", f"{tox_data['ld50']} mg/kg", f"GHS Class {ghs['class']}")
             st.caption(f"**GHS Category:** {ghs['category']} — {ghs['hazard']}")
 
         with col2:
-            cand_df = pd.DataFrame([{
-                "Compound": selected_drug_preset if selected_drug_preset != "Custom SMILES Input" else "Custom Molecule",
-                "TPSA": res_props.get("TPSA", 90.0),
-                "WLOGP": res_props.get("XLogP", 1.2),
-            }])
+            cand_df = pd.DataFrame(
+                [
+                    {
+                        "Compound": selected_drug_preset
+                        if selected_drug_preset != "Custom SMILES Input"
+                        else "Custom Molecule",
+                        "TPSA": res_props.get("TPSA", 90.0),
+                        "WLOGP": res_props.get("XLogP", 1.2),
+                    }
+                ]
+            )
             st.pyplot(generate_clean_boiled_egg_plot(cand_df))
     else:
         st.error(res_props.get("message"))
@@ -953,27 +1080,36 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
 # WORKSTATION IV
 # ------------------------------------------------------------------------------
 elif master_module == "Workstation IV: Invasion Pathways & In Vitro Kinetics":
-    st.markdown('<div class="section-title">Workstation IV: Invasion Pathways & 4PL In Vitro Kinetics</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-title">Workstation IV: Invasion Pathways & 4PL In Vitro Kinetics</div>',
+        unsafe_allow_html=True,
+    )
 
-    tab1, tab2, tab3, tab4 = st.tabs([
-        "🧪 4PL IC50 Calculator",
-        "📚 Potency Benchmarks & Interpretation Guide",
-        "🔍 KEGG Invasion Pathways",
-        "📝 Automated Thesis Exporter",
-    ])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        [
+            "🧪 4PL IC50 Calculator",
+            "📚 Potency Benchmarks & Interpretation Guide",
+            "🔍 KEGG Invasion Pathways",
+            "📝 Automated Thesis Exporter",
+        ]
+    )
 
     with tab1:
         st.subheader("In Vitro 4-Parameter Logistic (4PL) Regression Engine")
-        st.markdown(r"""
+        st.markdown(
+            r"""
         Cell viability follows a non-linear sigmoidal curve modeled by the **4PL equation**:
         $$y = d + \frac{a - d}{1 + \left(\frac{x}{c}\right)^b}$$
         Where $a$ is upper asymptote, $d$ is lower asymptote, $b$ is Hill slope, and $c$ is the $\text{IC}_{50}$.
-        """)
+        """
+        )
 
-        default_df = pd.DataFrame({
-            "Concentration_uM": [0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 50.0],
-            "Viability_Percent": [98.5, 94.2, 88.0, 52.1, 28.4, 11.2, 5.0, 1.2],
-        })
+        default_df = pd.DataFrame(
+            {
+                "Concentration_uM": [0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 50.0],
+                "Viability_Percent": [98.5, 94.2, 88.0, 52.1, 28.4, 11.2, 5.0, 1.2],
+            }
+        )
 
         edited_df = st.data_editor(default_df, num_rows="dynamic", use_container_width=True)
 
@@ -999,7 +1135,8 @@ elif master_module == "Workstation IV: Invasion Pathways & In Vitro Kinetics":
 
     with tab2:
         st.subheader("How to Interpret Your IC50 Calculation")
-        st.markdown(r"""
+        st.markdown(
+            r"""
         $\text{IC}_{50}$ (Half-Maximal Inhibitory Concentration) measures **drug potency**. Lower values indicate higher potency.
         
         | $\text{IC}_{50}$ Range | Classification Tier | Research Action / Meaning |
@@ -1015,7 +1152,8 @@ elif master_module == "Workstation IV: Invasion Pathways & In Vitro Kinetics":
         1. **Control Comparison:** Compare against Temozolomide ($\text{IC}_{50} > 50\ \mu\text{M}$ in resistant lines).
         2. **Curve Fit ($R^2$):** $R^2 \ge 0.95$ indicates a highly reliable mathematical fit.
         3. **Selectivity Index (SI):** $\text{SI} = \frac{\text{IC}_{50}\text{ (Healthy Astrocytes)}}{\text{IC}_{50}\text{ (GBM Cells)}}$. Target $\text{SI} > 10$.
-        """)
+        """
+        )
 
     with tab3:
         st.subheader("Live KEGG Infiltration Pathway Search")
@@ -1029,7 +1167,7 @@ elif master_module == "Workstation IV: Invasion Pathways & In Vitro Kinetics":
         hill_v = st.session_state.get("hill", 1.42)
 
         p_text = f"In vitro cytotoxic profiling across {active_cell_line} glioblastoma cell lines demonstrated strong, dose-dependent anti-tumor activity. Non-linear regression fitting using the 4-Parameter Logistic (4PL) model yielded a half-maximal inhibitory concentration (IC50) value of {ic50_v:.4f} µM (R² = {r2_v:.4f}, Hill slope b = {hill_v:.2f}). This sub-micromolar potency represents a significant improvement over standard Temozolomide controls (IC50 > 50 µM), establishing the candidate molecule as a potent therapeutic hit for further preclinical neuro-oncology optimization."
-        
+
         st.code(p_text, language="text")
 
 # ==============================================================================
