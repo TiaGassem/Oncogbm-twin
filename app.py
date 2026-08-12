@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
 
 # ==============================================================================
 # 1. PAGE CONFIGURATION & GLOBAL STYLES
@@ -24,7 +23,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 2. MASTER TARGET GENE DATABASE (ALL 9 PROTEINS)
+# 2. MASTER TARGET GENE DATABASE (ALL PROTEINS)
 # ==============================================================================
 GBM_TARGETS = {
     "TP53": {
@@ -180,32 +179,20 @@ TCGA_MUTATION_FALLBACKS = {
 # 3. SIDEBAR CONTROLS & DYNAMIC STATE CALLBACKS
 # ==============================================================================
 st.sidebar.markdown("### Executive Control Hub")
-st.sidebar.markdown("#### Quick-Start Research Presets")
+st.sidebar.markdown("#### Research Benchmark Presets")
 
-# Callbacks to enforce zero state conflicts
+# Callback functions
 def on_gene_change():
-    st.session_state["preset_active"] = False
+    st.session_state["preset_loaded_gene"] = None
 
-def load_cdc25a_preset():
-    st.session_state["selected_gene"] = "CDC25A"
-    st.session_state["preset_active"] = True
+def load_target_preset():
+    st.session_state["preset_loaded_gene"] = st.session_state["selected_gene"]
 
-# Session State Initialization
+# Initialize Session State
 if "selected_gene" not in st.session_state:
     st.session_state["selected_gene"] = "TP53"
-if "preset_active" not in st.session_state:
-    st.session_state["preset_active"] = False
-
-# Quick-Start Preset Button
-st.sidebar.button(
-    "Load Pre-Configured CDC25A + TMZ Benchmark",
-    type="primary",
-    on_click=load_cdc25a_preset
-)
-
-# Preset Alert Banner (Only active if explicitly clicked AND target is CDC25A)
-if st.session_state["preset_active"] and st.session_state["selected_gene"] == "CDC25A":
-    st.sidebar.success("Loaded CDC25A + TMZ Benchmark Data!")
+if "preset_loaded_gene" not in st.session_state:
+    st.session_state["preset_loaded_gene"] = None
 
 # Dynamic Target Selector Dropdown
 selected_gene = st.sidebar.selectbox(
@@ -215,12 +202,22 @@ selected_gene = st.sidebar.selectbox(
     on_change=on_gene_change
 )
 
+# Dynamic Preset Button (Loads benchmark for ANY selected gene)
+st.sidebar.button(
+    f"Load Pre-Configured {selected_gene} + TMZ Benchmark",
+    type="primary",
+    on_click=load_target_preset
+)
+
+# Dynamic Green Alert Banner (Matches active target)
+if st.session_state.get("preset_loaded_gene") == selected_gene:
+    st.sidebar.success(f"Loaded {selected_gene} + TMZ Benchmark Data!")
+
 active_cell_line = st.sidebar.selectbox(
     "Glioblastoma Cell Line:",
     ["U87-MG (Astrocytoma)", "U251-MG (Glia)", "LN229 (Phenotype)", "GSC-3832 (Patient Stem Cells)"]
 )
 
-# Extract dynamic target metadata matching active dropdown selection
 meta = GBM_TARGETS[selected_gene]
 
 # ==============================================================================
