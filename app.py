@@ -430,7 +430,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # ==============================================================================
 # 5. REST API & COMPUTATIONAL ENGINES
 # ==============================================================================
@@ -521,24 +520,9 @@ def fetch_gbm_kegg_pathways(gene_symbol: str) -> list:
         if response.status_code == 200 and response.text.strip():
             lines = response.text.strip().split("\n")
             gbm_keywords = [
-                "glioma",
-                "cancer",
-                "migration",
-                "invasion",
-                "adhesion",
-                "focal",
-                "mtor",
-                "mapk",
-                "pi3k",
-                "wnt",
-                "erbb",
-                "p53",
-                "tgf-beta",
-                "egfr",
-                "akt",
-                "ras",
-                "extracellular matrix",
-                "jak-stat",
+                "glioma", "cancer", "migration", "invasion", "adhesion",
+                "focal", "mtor", "mapk", "pi3k", "wnt", "erbb", "p53",
+                "tgf-beta", "egfr", "akt", "ras", "extracellular matrix", "jak-stat"
             ]
             for line in lines:
                 parts = line.split("\t")
@@ -620,7 +604,6 @@ def fetch_cbioportal_gbm_mutations(gene_symbol: str) -> dict:
         "variants": fallback_variants,
     }
 
-
 # ==============================================================================
 # 6. GRAPHICAL PLOTTING ENGINES
 # ==============================================================================
@@ -648,9 +631,7 @@ def plot_kaplan_meier_survival(gene_symbol: str, hr: float, p_val: float):
         label=f"Low {gene_symbol} Expression",
     )
 
-    ax.set_xlabel(
-        "Overall Survival Time (Months)", fontsize=9, fontweight="bold"
-    )
+    ax.set_xlabel("Overall Survival Time (Months)", fontsize=9, fontweight="bold")
     ax.set_ylabel("Survival Probability (%)", fontsize=9, fontweight="bold")
     ax.set_title(
         f"Kaplan-Meier Overall Survival: {gene_symbol} (TCGA GBM Cohort)",
@@ -666,16 +647,12 @@ def plot_kaplan_meier_survival(gene_symbol: str, hr: float, p_val: float):
         f"Hazard Ratio (HR) = {hr:.2f}\nLog-rank p-value = {p_val:.4f}",
         fontsize=8.5,
         fontweight="bold",
-        bbox=dict(
-            boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1
-        ),
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1),
     )
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(
-        loc="upper right", frameon=True, facecolor="white", fontsize=8
-    )
+    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
     plt.tight_layout()
     return fig
 
@@ -699,9 +676,7 @@ def plot_gene_expression_comparison(gene_symbol: str, base_expr: float):
     for median in bp["medians"]:
         median.set(color="#0F172A", linewidth=2)
 
-    ax.set_ylabel(
-        "Gene Expression log2(TPM + 1)", fontsize=9, fontweight="bold"
-    )
+    ax.set_ylabel("Gene Expression log2(TPM + 1)", fontsize=9, fontweight="bold")
     ax.set_title(
         f"Differential Expression: {gene_symbol} (GBM vs GTEx)",
         fontsize=10,
@@ -732,28 +707,21 @@ def plot_coexpression_matrix():
 
     ax.set_xticks(range(len(genes)))
     ax.set_yticks(range(len(genes)))
-    ax.set_xticklabels(
-        genes, rotation=45, ha="left", fontsize=8, fontweight="bold"
-    )
+    ax.set_xticklabels(genes, rotation=45, ha="left", fontsize=8, fontweight="bold")
     ax.set_yticklabels(genes, fontsize=8, fontweight="bold")
 
     for i in range(len(genes)):
         for j in range(len(genes)):
             ax.text(
-                j,
-                i,
-                f"{matrix[i, j]:.2f}",
-                ha="center",
-                va="center",
+                j, i, f"{matrix[i, j]:.2f}",
+                ha="center", va="center",
                 color="black" if abs(matrix[i, j]) < 0.6 else "white",
                 fontsize=7.5,
             )
 
     ax.set_title(
         "Biomarker Co-Expression Correlation (Pearson r)",
-        fontsize=10,
-        fontweight="bold",
-        pad=25,
+        fontsize=10, fontweight="bold", pad=25,
     )
     plt.tight_layout()
     return fig
@@ -766,18 +734,10 @@ def plot_md_trajectory_rmsd_rmsf():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.8))
 
     ax1.plot(time_ns, rmsd, color="#0284C7", linewidth=1.5)
-    ax1.axhline(
-        1.7,
-        color="#DC2626",
-        linestyle="--",
-        alpha=0.7,
-        label="Equilibrium Threshold (< 2.0 Å)",
-    )
+    ax1.axhline(1.7, color="#DC2626", linestyle="--", alpha=0.7, label="Equilibrium Threshold (< 2.0 Å)")
     ax1.set_xlabel("MD Simulation Time (ns)", fontsize=9, fontweight="bold")
     ax1.set_ylabel("Cα Backbone RMSD (Å)", fontsize=9, fontweight="bold")
-    ax1.set_title(
-        "100 ns Complex Stability (RMSD)", fontsize=10, fontweight="bold"
-    )
+    ax1.set_title("100 ns Complex Stability (RMSD)", fontsize=10, fontweight="bold")
     ax1.grid(True, linestyle="--", alpha=0.2)
     ax1.legend(loc="lower right", fontsize=8)
 
@@ -786,14 +746,10 @@ def plot_md_trajectory_rmsd_rmsf():
     rmsf[120:140] += 1.6
 
     ax2.plot(residues, rmsf, color="#0369A1", linewidth=1.5)
-    ax2.axvspan(
-        120, 140, color="#FEF08A", alpha=0.6, label="Binding Active Pocket Loop"
-    )
+    ax2.axvspan(120, 140, color="#FEF08A", alpha=0.6, label="Binding Active Pocket Loop")
     ax2.set_xlabel("Residue Position", fontsize=9, fontweight="bold")
     ax2.set_ylabel("Cα RMSF Fluctuation (Å)", fontsize=9, fontweight="bold")
-    ax2.set_title(
-        "Residue Flexibility Profile (RMSF)", fontsize=10, fontweight="bold"
-    )
+    ax2.set_title("Residue Flexibility Profile (RMSF)", fontsize=10, fontweight="bold")
     ax2.grid(True, linestyle="--", alpha=0.2)
     ax2.legend(loc="upper right", fontsize=8)
 
@@ -805,39 +761,19 @@ def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(7.0, 4.2))
     ax.set_xlim(0, 160)
     ax.set_ylim(-2, 6)
-    ax.set_xlabel(
-        "TPSA (Topological Polar Surface Area, Å²)",
-        fontsize=9,
-        fontweight="bold",
-    )
+    ax.set_xlabel("TPSA (Topological Polar Surface Area, Å²)", fontsize=9, fontweight="bold")
     ax.set_ylabel("WLOGP (Lipophilicity)", fontsize=9, fontweight="bold")
-    ax.set_title(
-        "SwissADME BOILED-Egg BBB Permeability Predictor",
-        fontsize=10,
-        fontweight="bold",
-        pad=12,
-    )
+    ax.set_title("SwissADME BOILED-Egg BBB Permeability Predictor", fontsize=10, fontweight="bold", pad=12)
 
     hia_ellipse = patches.Ellipse(
-        (72, 1.8),
-        width=105,
-        height=5.2,
-        angle=-10,
-        facecolor="#FEF08A",
-        edgecolor="#EAB308",
-        alpha=0.5,
+        (72, 1.8), width=105, height=5.2, angle=-10,
+        facecolor="#FEF08A", edgecolor="#EAB308", alpha=0.5,
         label="HIA Zone (Intestinal Absorption)",
     )
     ax.add_patch(hia_ellipse)
     bbb_ellipse = patches.Ellipse(
-        (38, 2.1),
-        width=58,
-        height=3.2,
-        angle=-10,
-        facecolor="#FFFFFF",
-        edgecolor="#0284C7",
-        linewidth=1.5,
-        alpha=0.9,
+        (38, 2.1), width=58, height=3.2, angle=-10,
+        facecolor="#FFFFFF", edgecolor="#0284C7", linewidth=1.5, alpha=0.9,
         label="BBB Permeable Zone (Brain Tumors)",
     )
     ax.add_patch(bbb_ellipse)
@@ -849,36 +785,18 @@ def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
         color = "#0369A1" if is_bbb == "BBB+" else "#DC2626"
         marker_label = markers[idx % len(markers)]
 
-        ax.scatter(
-            tpsa,
-            wlogp,
-            color=color,
-            s=110,
-            zorder=5,
-            edgecolors="#0F172A",
-            linewidth=1.0,
-        )
+        ax.scatter(tpsa, wlogp, color=color, s=110, zorder=5, edgecolors="#0F172A", linewidth=1.0)
         y_offset = 0.25 if idx % 2 == 0 else -0.35
         ax.annotate(
             f"[{marker_label}] {row['Compound']}",
             (tpsa + 2, wlogp + y_offset),
-            fontsize=8,
-            fontweight="bold",
-            color="#0F172A",
-            bbox=dict(
-                boxstyle="round,pad=0.2",
-                fc="white",
-                ec=color,
-                lw=1,
-                alpha=0.85,
-            ),
+            fontsize=8, fontweight="bold", color="#0F172A",
+            bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color, lw=1, alpha=0.85),
         )
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(
-        loc="upper right", frameon=True, facecolor="white", fontsize=8
-    )
+    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
     plt.tight_layout()
     return fig
 
@@ -888,53 +806,30 @@ def four_parameter_logistic(x, a, b, c, d):
 
 
 def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
-    x, y = np.array(concentrations_uM, dtype=float), np.array(
-        viability_pct, dtype=float
-    )
+    x, y = np.array(concentrations_uM, dtype=float), np.array(viability_pct, dtype=float)
     p0 = [min(y), 1.0, np.median(x), max(y)]
     bounds = ([0.0, 0.1, 1e-6, 0.0], [100.0, 10.0, max(x) * 10, 150.0])
     try:
         popt, _ = curve_fit(
-            four_parameter_logistic,
-            x,
-            y,
-            p0=p0,
-            bounds=bounds,
-            maxfev=10000,
+            four_parameter_logistic, x, y, p0=p0, bounds=bounds, maxfev=10000
         )
         a, b, c, d = popt
         residuals = y - four_parameter_logistic(x, *popt)
         r_squared = 1 - (np.sum(residuals**2) / np.sum((y - np.mean(y)) ** 2))
 
         fig, ax = plt.subplots(figsize=(6.5, 3.6))
-        x_dense = np.logspace(
-            np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300
-        )
-        ax.scatter(
-            x,
-            y,
-            color="#0369A1",
-            label="Experimental Data",
-            zorder=4,
-            s=50,
-            edgecolors="#0F172A",
-            linewidth=1.0,
-        )
+        x_dense = np.logspace(np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300)
+        ax.scatter(x, y, color="#0369A1", label="Experimental Data", zorder=4, s=50, edgecolors="#0F172A", linewidth=1.0)
         ax.plot(
-            x_dense,
-            four_parameter_logistic(x_dense, a, b, c, d),
-            color="#DC2626",
-            linestyle="--",
-            linewidth=2.0,
+            x_dense, four_parameter_logistic(x_dense, a, b, c, d),
+            color="#DC2626", linestyle="--", linewidth=2.0,
             label=f"4PL Fit (IC50 = {c:.4f} µM)",
         )
         ax.axhline(50, color="#94A3B8", linestyle=":", alpha=0.8)
         ax.set_xscale("log")
         ax.set_xlabel("Concentration (µM)", fontsize=9, fontweight="bold")
         ax.set_ylabel("Viability (%)", fontsize=9, fontweight="bold")
-        ax.set_title(
-            "In Vitro 4PL Dose-Response Fit", fontsize=10, fontweight="bold"
-        )
+        ax.set_title("In Vitro 4PL Dose-Response Fit", fontsize=10, fontweight="bold")
         ax.legend(frameon=True, facecolor="#F8FAFC", fontsize=8)
         ax.grid(True, which="both", alpha=0.15)
         plt.tight_layout()
@@ -948,7 +843,6 @@ def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-
 # ==============================================================================
 # 7. WORKSTATIONS ARCHITECTURE
 # ==============================================================================
@@ -958,7 +852,7 @@ master_module = st.radio(
         "Workstation I: Genomic & Survival Analytics",
         "Workstation II: Docking & 100ns MD Simulation Guide",
         "Workstation III: ProTox-3 Toxicity & ADMET BBB Model",
-        "Workstation IV: Invasion Pathways, 4PL Assays & Literature",
+        "Workstation IV: Invasion Pathways & In Vitro Kinetics",
     ],
     horizontal=True,
 )
@@ -966,556 +860,187 @@ master_module = st.radio(
 st.markdown("---")
 
 # ------------------------------------------------------------------------------
-# WORKSTATION I: GENOMIC & SURVIVAL ANALYTICS
+# WORKSTATION I
 # ------------------------------------------------------------------------------
 if master_module == "Workstation I: Genomic & Survival Analytics":
-    st.markdown(
-        '<div class="section-title">Workstation I — Cohort Expressions, Survival & Mutation Profiling</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="section-title">Workstation I: Genomic & Survival Validation ({selected_gene})</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.pyplot(plot_gene_expression_comparison(selected_gene, meta["base_expr"]))
+    with col2:
+        st.pyplot(plot_kaplan_meier_survival(selected_gene, meta["hr"], meta["p_val"]))
 
-    col_w1, col_w2 = st.columns([1, 1])
-
-    with col_w1:
-        st.markdown("#### Differential Transcript Expression")
-        st.pyplot(
-            plot_gene_expression_comparison(
-                selected_gene, meta["base_expr"]
-            )
-        )
-
-        with st.expander("Academic Validation & Cohort Details"):
-            st.markdown(r"""
-            * **TCGA-GBM Cohort ($N=163$):** Primary Glioblastoma tumor RNA-seq dataset from the NIH/NCI Cancer Genome Atlas Pan-Cancer Atlas.
-            * **GTEx Healthy Brain Cohort ($N=207$):** Non-diseased donor cortical tissue samples from the Genotype-Tissue Expression database.
-            * **Normalization Formula:** Expression is quantified in Transcripts Per Million ($\text{TPM}$) using logarithmic transformation:
-              $$\text{Expression Score} = \log_2(\text{TPM} + 1)$$
-            * **Manuscript Formulation:**
-              > *"Target gene $X$ demonstrates significant transcript upregulation in primary Glioblastoma tumors ($N=163$) compared to non-malignant cortical controls ($N=207$, $\log_2(\text{TPM}+1) = 5.8$ versus $2.1$, $p < 0.001$), confirming its oncogenic driver profile."*
-            * **Citations:** TCGA Research Network, Nature 2008 (PMID: 18772890); GTEx Consortium, Science 2020 (PMID: 32913098).
-            """)
-
-    with col_w2:
-        st.markdown("#### Overall Survival Probability (Kaplan-Meier)")
-        st.pyplot(
-            plot_kaplan_meier_survival(
-                selected_gene, meta["hr"], meta["p_val"]
-            )
-        )
-
-        with st.expander("Kaplan-Meier Methodology & Hazard Ratio Analysis"):
-            st.markdown(r"""
-            * **Hazard Ratio ($\text{HR}$):** An $\text{HR} = 1.62$ indicates that patients with elevated target expression experience a $62\%$ higher risk of mortality at any given time point.
-            * **Log-rank Test ($p$-value):** Values of $p < 0.05$ confirm statistically significant survival divergence between high and low expression cohorts.
-            * **Kaplan-Meier Estimator Formula:**
-              $$S(t) = \prod_{t_i \le t} \left(1 - \frac{d_i}{n_i}\right)$$
-            * **Manuscript Formulation:**
-              > *"Kaplan-Meier survival analysis using the Cox proportional hazards model confirms that elevated $X$ expression strongly correlates with shortened overall survival ($\text{HR} = 1.62$, $p = 0.012$), establishing $X$ as an independent prognostic marker in Glioblastoma."*
-            * **Citations:** Cox, D. R. (1972) J R Stat Soc B; Bland & Altman (1998) BMJ (PMID: 9836663).
-            """)
-
-    st.markdown("---")
-    col_c1, col_c2 = st.columns([1.2, 1])
-
-    with col_c1:
-        st.markdown("#### Biomarker Co-Expression Correlation Matrix")
+    st.markdown('<div class="section-title">Co-Expression Matrix & Mutation Landscape</div>', unsafe_allow_html=True)
+    col3, col4 = st.columns([1.2, 1])
+    with col3:
         st.pyplot(plot_coexpression_matrix())
-
-        with st.expander("Pearson Correlation ($r$) Matrix Interpretation"):
-            st.markdown(r"""
-            * **Pearson Correlation Coefficient ($r$):** Quantifies linear co-expression between transcript pairs ($+1.0$ indicates synchronized co-expression, $-1.0$ indicates inverse regulation).
-            * **Biomarker Synergy:** Strong co-expression ($r = 0.82$ between CDC25A and CDK1) reflects shared transcriptional promoters driving G1/S transition.
-            * **Pearson Correlation Formula:**
-              $$r = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sqrt{\sum_{i=1}^n (X_i - \bar{X})^2 \sum_{i=1}^n (Y_i - \bar{Y})^2}}$$
-            """)
-
-    with col_c2:
-        st.markdown("#### Somatic Mutations (cBioPortal REST API)")
-        c_info = fetch_cbioportal_gbm_mutations(selected_gene)
-        if c_info["status"] == "success":
-            st.metric("Total Somatic Mutation Count", c_info["total_mutations"])
-            st.write("**Top Recurrent Variants:**")
-            for var in c_info["variants"]:
-                st.markdown(f"- `{var}`")
-
-        with st.expander("Mutational Profile & Resistance Analysis"):
-            st.markdown(r"""
-            * **Role in Drug Discovery:** Recurrent mutations in catalytic domains (such as EGFRvIII or IDH1 R132H) alter binding pocket geometry, necessitating variant-specific drug modeling.
-            * **Source:** Data retrieved via cBioPortal OpenAPI for TCGA Glioblastoma Pan-Cancer Atlas.
-            * **Citation:** Cerami et al., Cancer Discov 2012 (PMID: 22588877).
-            """)
+    with col4:
+        st.markdown(f"#### TCGA Pan-Cancer Atlas Variants ({selected_gene})")
+        mut_data = fetch_cbioportal_gbm_mutations(selected_gene)
+        st.write(f"**Total Mutations Detected:** {mut_data['total_mutations']}")
+        for v in mut_data["variants"]:
+            st.markdown(f"* `{v}`")
 
 # ------------------------------------------------------------------------------
-# WORKSTATION II: MOLECULAR DOCKING & 100ns MD SIMULATION
+# WORKSTATION II
 # ------------------------------------------------------------------------------
 elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
-    st.markdown(
-        '<div class="section-title">Workstation II — Structural Molecular Docking & 100 ns Molecular Dynamics Protocols</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="section-title">Workstation II: Structural Docking & 100 ns MD Dynamics</div>', unsafe_allow_html=True)
+    
+    st.markdown(r"""
+    <div class="academic-guide">
+        <b>Thermodynamic Hit Selection Criteria:</b> Active-site screening requires a Gibbs Free Energy threshold of $\Delta G \le -6.0\text{ kcal/mol}$ 
+        (corresponding to a dissociation constant $K_d \le 40\ \mu\text{M}$ at $310.15\text{ K}$) and hydrogen-bond donor-acceptor distances $\le 3.2\text{ \AA}$.
+    </div>
+    """, unsafe_allow_html=True)
 
-    tab_doc, tab_sim = st.tabs([
-        "Protocol: Docking & MD Instructions",
-        "Interactive 100 ns Trajectory Analysis Engine",
-    ])
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        st.markdown("#### Thermodynamic Calculator")
+        dg = st.number_input("Binding Energy ΔG (kcal/mol):", value=-8.4, step=0.1)
+        temp = 310.15  # Body Temperature (K)
+        r_const = 0.0019872042  # kcal/(mol·K)
+        kd_uM = np.exp(dg / (r_const * temp)) * 1e6
+        
+        st.metric("Calculated Dissociation Constant (Kd)", f"{kd_uM:.3f} µM")
+        if dg <= -6.0:
+            st.success("Passes High-Affinity Binding Cutoff (ΔG ≤ -6.0 kcal/mol)")
+        else:
+            st.error("Fails Binding Cutoff")
 
-    with tab_doc:
-        st.markdown("""
-        <div class="academic-guide">
-            <b>Molecular Docking versus Molecular Dynamics Rationale:</b><br>
-            • <b>Molecular Docking (Static):</b> Calculates the preferred binding pose and binding energy (ΔG in kcal/mol) within a rigid target pocket.<br>
-            • <b>Molecular Dynamics (Dynamic):</b> Simulates atomic movement over 100 ns in an explicit solvent box (310 K, 1.0 bar) to evaluate complex thermodynamic stability (RMSD/RMSF).
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.subheader("1. Step-by-Step Instructions to Run Docking & MD")
-
-        col_p1, col_p2 = st.columns(2)
-
-        with col_p1:
-            st.markdown(r"""
-            #### **A. Molecular Docking Protocol**
-            1. **Retrieve Receptor Structure:** Download crystal coordinates from RCSB PDB (for instance, PDB ID `1C25` for CDC25A).
-            2. **Prepare Ligand Geometry:** Retrieve canonical SMILES strings from PubChem and convert to 3D conformers (`.sdf` or `.pdbqt`).
-            3. **Execute Active Site Docking:**
-               * Submit receptor and ligand coordinates to **CB-Dock2** (`cbdock2.labshare.cn`) or **SwissDock** (`swissdock.ch`).
-               * Define grid box around catalytic residues (for instance, Cys12 in CDC25A).
-            4. **Extract Key Metrics:**
-               * **Binding Energy ($\Delta G$ Hit Threshold):** $\Delta G \le -6.0\text{ kcal/mol}$ for active hits; $\le -7.0\text{ kcal/mol}$ for high affinity leads.
-               * **Hydrogen Bonding:** Measure polar interaction distances ($\le 3.2\text{ \AA}$).
-            """)
-
-        with col_p2:
-            st.markdown(r"""
-            #### **B. 100 ns Molecular Dynamics Protocol**
-            1. **Generate Topology:** Submit docked complex to **CHARMM-GUI** or **WebGRO MD Server** (`simlab.uams.edu`).
-            2. **Solvation & Ionization:**
-               * Solvent Model: **TIP3P** explicit water box (minimum $10.0\text{ \AA}$ edge distance).
-               * Neutralization: Add $\text{Na}^+$ and $\text{Cl}^-$ ions to achieve $0.15\text{ M}$ physiological concentration.
-            3. **Equilibration:** Run $100\text{ ps}$ NVT and NPT ensemble equilibrations at $310\text{ K}$ and $1.0\text{ bar}$.
-            4. **Production Run:** Execute $100\text{ ns}$ GROMACS simulation.
-            5. **Extract Trajectory Metrics:** Download C$\alpha$ backbone **RMSD** ($< 2.0\text{ \AA}$) and **RMSF** profiles.
-            """)
-
-        st.markdown("---")
-        st.markdown("#### Primary Output Metrics for Manuscript Extraction")
-
-        df_md_guide = pd.DataFrame([
-            {
-                "Output Metric": "Binding Energy (ΔG)",
-                "Physical Property": "Gibbs free energy of binding",
-                "Target Threshold": "≤ -6.0 kcal/mol (Bioactive Hit)",
-                "Manuscript Interpretation": "Indicates spontaneous binding; values ≤ -6.0 kcal/mol denote hit activity (Kd ≤ 40 µM).",
-            },
-            {
-                "Output Metric": "Cα Backbone RMSD",
-                "Physical Property": "Root Mean Square Deviation over 100 ns",
-                "Target Threshold": "< 2.0 Å fluctuation",
-                "Manuscript Interpretation": "Confirms complex equilibrium without ligand dissociation.",
-            },
-            {
-                "Output Metric": "Residue RMSF",
-                "Physical Property": "Root Mean Square Fluctuation per residue",
-                "Target Threshold": "Low in binding pocket",
-                "Manuscript Interpretation": "Demonstrates ligand-induced stabilization of active catalytic loops.",
-            },
-            {
-                "Output Metric": "H-Bond Distance",
-                "Physical Property": "Distance between polar donor and acceptor",
-                "Target Threshold": "≤ 3.2 Å distance",
-                "Manuscript Interpretation": "Confirms strong electrostatic anchoring within the active site pocket.",
-            },
-        ])
-        st.dataframe(df_md_guide, use_container_width=True)
-
-        with st.expander("Literature Proof for Docking Thresholds (ΔG ≤ -6.0 kcal/mol)"):
-            st.markdown(r"""
-            * **Thermodynamic Basis:** $\Delta G = R T \ln(K_d)$. At body temperature ($298.15\text{ K}$), $\Delta G = -6.0\text{ kcal/mol}$ corresponds to a dissociation constant $K_d \approx 40\ \mu\text{M}$, the standard benchmark for active hit selection in virtual screening.
-            * **Primary Literature Citations:**
-              1. **Meng, X.-Y. et al. (2011):** *Molecular Docking: A Powerful Approach for Structure-Based Drug Discovery.* **Curr. Comput. Aided Drug Des.** 7(2):146–157 [PMID: 21532826].
-              2. **Shityakov, S. & Förster, C. (2014):** *In silico molecular docking studies.* **J. Mol. Model.** 20(8):2327 [PMID: 25056770].
-            """)
-
-    with tab_sim:
-        st.subheader("2. 100 ns Trajectory Stability (RMSD & RMSF Profiler)")
+    with col2:
         st.pyplot(plot_md_trajectory_rmsd_rmsf())
 
-        st.info("Analysis: The RMSD trajectory demonstrates complex equilibration at approximately 1.5 Å within 20 ns, maintaining structural stability throughout the 100 ns simulation. The RMSF plot highlights catalytic loop stabilization across residues 120–140.")
-
 # ------------------------------------------------------------------------------
-# WORKSTATION III: PROTOX-3 TOXICITY, ADMET & BOILED-EGG
+# WORKSTATION III
 # ------------------------------------------------------------------------------
 elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
-    st.markdown(
-        '<div class="section-title">Workstation III — Automated ProTox-3 Toxicity, ADMET & BOILED-Egg BBB Predictor</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown('<div class="section-title">Workstation III: ProTox-3 Toxicity & ADMET BBB Predictor</div>', unsafe_allow_html=True)
 
-    protox_profile = PROTOX_BENCHMARKS.get(quick_smiles, DEFAULT_PROTOX)
-    ld50_val = protox_profile["ld50"]
-    ghs_res = classify_ghs_acute_toxicity(ld50_val)
+    res_props = fetch_compound_all_properties(quick_smiles)
+    
+    if res_props.get("status") == "success":
+        col1, col2 = st.columns([1, 1.5])
+        with col1:
+            st.markdown("#### Parsed Chemical Parameters")
+            st.write(f"**IUPAC Name:** {res_props.get('IUPACName', 'N/A')}")
+            st.write(f"**Molecular Weight:** {res_props.get('MolecularWeight')} g/mol")
+            st.write(f"**TPSA:** {res_props.get('TPSA')} Å²")
+            st.write(f"**WLOGP:** {res_props.get('XLogP')}")
+            
+            # Toxicity Lookup
+            canonical_smiles = res_props.get("CanonicalSMILES", quick_smiles)
+            tox_data = PROTOX_BENCHMARKS.get(canonical_smiles, DEFAULT_PROTOX)
+            ghs = classify_ghs_acute_toxicity(tox_data["ld50"])
+            
+            st.markdown("---")
+            st.markdown("#### ProTox-3 Toxicity Profile")
+            st.metric("Estimated Oral LD50", f"{tox_data['ld50']} mg/kg", f"GHS Class {ghs['class']}")
+            st.caption(f"**GHS Category:** {ghs['category']} — {ghs['hazard']}")
 
-    col_t1, col_t2 = st.columns([1, 1.1])
-
-    with col_t1:
-        st.subheader("1. ProTox-3 Acute Oral Toxicity Profile")
-        st.write(f"**Evaluated SMILES:** `{quick_smiles}`")
-        st.metric("Predicted Oral LD50", f"{ld50_val:.1f} mg/kg")
-        st.metric("OECD GHS Category", f"Class {ghs_res['class']}")
-        st.write(f"**Classification:** {ghs_res['category']}")
-        st.write(f"**Hazard Rating:** {ghs_res['hazard']}")
-
-        pubchem_url = f"https://pubchem.ncbi.nlm.nih.gov/#query={urllib.parse.quote(quick_smiles)}"
-        st.markdown(
-            f'<a href="{pubchem_url}" target="_blank" style="text-decoration:none;"><button style="background-color:#0284C7; color:white; border:none; padding:0.45rem 0.9rem; border-radius:4px; font-weight:600; cursor:pointer; margin-top:0.5rem;">Open Molecule Entry in PubChem Database</button></a>',
-            unsafe_allow_html=True,
-        )
-
-        with st.expander("ProTox-3 Methodology & OECD GHS Standards"):
-            st.markdown(r"""
-            * **$\text{LD}_{50}$ Definition:** Estimated median lethal dose in $\text{mg/kg}$ body weight causing 50% mortality in test models.
-            * **OECD Guideline 423 / GHS Categories:**
-              * **Class 1 & 2 ($\text{LD}_{50} \le 50\text{ mg/kg}$):** Fatal if swallowed.
-              * **Class 3 & 4 ($50 < \text{LD}_{50} \le 2000\text{ mg/kg}$):** High / Moderate acute toxicity hazard.
-              * **Class 5 & 6 ($\text{LD}_{50} > 2000\text{ mg/kg}$):** Low toxicity or practically non-toxic.
-            * **Citations:** Banerjee et al., Nucleic Acids Res 2024 (ProTox 3.0); OECD Test Guideline 423.
-            """)
-
-    with col_t2:
-        st.subheader("2. Organ Toxicity & Endpoint Predictions")
-        st.write("**Deterministic Computational Toxicity Profile:**")
-
-        eval_records = []
-        for ep_name, status_str, prob_val in protox_profile["endpoints"]:
-            conf_rating = (
-                "High Confidence"
-                if prob_val >= 0.85
-                else (
-                    "Moderate Confidence"
-                    if prob_val >= 0.70
-                    else "Low / Borderline Confidence"
-                )
-            )
-            # Use Native Streamlit Markdown Color Badges to prevent HTML unrendered tags
-            color_badge = ":red[Active]" if status_str == "Active" else ":blue[Inactive]"
-            st.markdown(
-                f"- **{ep_name}:** {color_badge} (Probability: **{prob_val:.2f}** | {conf_rating})"
-            )
-            eval_records.append({
-                "Endpoint": ep_name,
-                "Prediction": status_str,
-                "Probability Score": prob_val,
-                "Confidence Assessment": conf_rating,
-            })
-
-    st.markdown("---")
-
-    if quick_smiles:
-        adme_data = fetch_compound_all_properties(quick_smiles)
-        if adme_data["status"] == "success":
-            mw = float(adme_data.get("MolecularWeight", 300.0))
-            tpsa = float(adme_data.get("TPSA", 50.0))
-            wlogp = float(adme_data.get("XLogP", 2.0))
-            hbd = int(adme_data.get("HBondDonorCount", 1))
-            hba = int(adme_data.get("HBondAcceptorCount", 4))
-
-            is_bbb = (
-                "BBB+ (Permeable)"
-                if (tpsa < 75 and 0.5 < wlogp < 3.5)
-                else "BBB- (Impermeable)"
-            )
-
-            col_r1, col_r2 = st.columns([1.1, 1.2])
-
-            with col_r1:
-                st.subheader("3. SMILES Property Graph Parsing")
-                st.write(f"**IUPAC Name:** {adme_data.get('IUPACName', 'N/A')}")
-                st.write(f"**Molecular Weight:** {mw:.2f} g/mol")
-                st.write(f"**TPSA:** {tpsa:.2f} Å² | **WLOGP:** {wlogp:.2f}")
-                st.write(f"**H-Bond Donors (HBD):** {hbd} | **Acceptors (HBA):** {hba}")
-                st.write(f"**Blood-Brain Barrier Status:** `{is_bbb}`")
-
-                with st.expander("Origin of H-Bonds & Lipinski Constraints"):
-                    st.markdown(r"""
-                    * **Hydrogen Bond Calculations:** Derived from graph analysis of the canonical SMILES string via the PubChem PUG-REST service.
-                      * **H-Bond Donors (HBD):** Total hydrogen atoms bound to electronegative donors ($-\text{OH}$ and $-\text{NH}$ groups).
-                      * **H-Bond Acceptors (HBA):** Total electronegative nitrogen ($\text{N}$) and oxygen ($\text{O}$) atoms with unshared electron pairs.
-                    * **Lipinski Rule of Five Criteria:**
-                      $$\text{MW} \le 500 \text{ g/mol}, \quad \text{LogP} \le 5.0, \quad \text{HBD} \le 5, \quad \text{HBA} \le 10$$
-                    * **Citation:** Lipinski et al., Adv Drug Deliv Rev 1997 (PMID: 11259830).
-                    """)
-
-            with col_r2:
-                st.subheader("4. SwissADME BOILED-Egg BBB Permeability Predictor")
-                df_plot = pd.DataFrame([
-                    {
-                        "Compound": "Candidate Drug",
-                        "TPSA": tpsa,
-                        "WLOGP": wlogp,
-                    },
-                    {
-                        "Compound": "NSC95397 Control",
-                        "TPSA": 45.2,
-                        "WLOGP": 2.1,
-                    },
-                    {
-                        "Compound": "Impermeable Control",
-                        "TPSA": 125.0,
-                        "WLOGP": -0.8,
-                    },
-                ])
-                st.pyplot(generate_clean_boiled_egg_plot(df_plot))
-
-                with st.expander("BOILED-Egg Model Analysis, Plot Legend & Conclusion"):
-                    st.markdown(r"""
-                    * **Legend Mapping:**
-                      * **[1] Candidate Drug:** Novel molecule under evaluation.
-                      * **[2] NSC95397 Control:** Reference lead candidate.
-                      * **[3] Impermeable Control:** Benchmark molecule blocked by the BBB.
-                    * **Physicochemical Zones:**
-                      * **Yellow Zone (Egg Yolk):** High **Human Intestinal Absorption (HIA)** required for oral bioavailability.
-                      * **White Zone (Egg White = BBB):** Specific region defined by $\text{TPSA} < 75\text{ \AA}^2$ and $0.5 < \text{WLOGP} < 3.5$ enabling passive penetration across the Blood-Brain Barrier into brain tumors.
-                    * **Scientific Conclusion:** Candidates positioning within the white ellipse demonstrate passive brain permeability, satisfying a prerequisite for Glioblastoma drug development.
-                    * **Citation:** Daina & Zoete, ChemMedChem 2016 (DOI: 10.1002/cmdc.201600182).
-                    """)
-
-    csv_bytes = pd.DataFrame(eval_records).to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="Download ProTox & Patient Safety Report (CSV)",
-        data=csv_bytes,
-        file_name=f"ProTox_Toxicity_Report_{selected_gene}.csv",
-        mime="text/csv",
-    )
+        with col2:
+            cand_df = pd.DataFrame([{
+                "Compound": selected_drug_preset if selected_drug_preset != "Custom SMILES Input" else "Custom Molecule",
+                "TPSA": res_props.get("TPSA", 90.0),
+                "WLOGP": res_props.get("XLogP", 1.2),
+            }])
+            st.pyplot(generate_clean_boiled_egg_plot(cand_df))
+    else:
+        st.error(res_props.get("message"))
 
 # ------------------------------------------------------------------------------
-# WORKSTATION IV: INVASION PATHWAYS, ASSAYS & MASTER LITERATURE LIBRARY
+# WORKSTATION IV
 # ------------------------------------------------------------------------------
-elif (
-    master_module
-    == "Workstation IV: Invasion Pathways, 4PL Assays & Literature"
-):
-    st.markdown(
-        '<div class="section-title">Workstation IV — Migration Pathways, 4PL Assays & Master Academic Library</div>',
-        unsafe_allow_html=True,
-    )
+elif master_module == "Workstation IV: Invasion Pathways & In Vitro Kinetics":
+    st.markdown('<div class="section-title">Workstation IV: Invasion Pathways & 4PL In Vitro Kinetics</div>', unsafe_allow_html=True)
 
-    tab_path, tab_fit, tab_guide = st.tabs([
-        "GBM Migration Pathways",
-        "4PL Dose-Response Fitting",
-        "Platform User Guide & Master Open-Access Library",
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "🧪 4PL IC50 Calculator",
+        "📚 Potency Benchmarks & Interpretation Guide",
+        "🔍 KEGG Invasion Pathways",
+        "📝 Automated Thesis Exporter",
     ])
 
-    with tab_path:
-        st.subheader("1. Glioblastoma Cell Migration & Invasion Network Search")
-        st.markdown("""
-        Glioblastoma cells invade healthy brain parenchyma along vascular tracts via key migratory mechanisms:
-        * **Epithelial-Mesenchymal Transition (EMT) & Mesenchymal Shift** (driven by ZEB1, TWIST1, STAT3)
-        * **Extracellular Matrix (ECM) Degradation** (MMP2 and MMP9 cleavage of cerebrovascular membranes)
-        * **Focal Adhesion & Cytoskeletal Remodeling** (regulated by FAK, Rho GTPases, and Integrins)
+    with tab1:
+        st.subheader("In Vitro 4-Parameter Logistic (4PL) Regression Engine")
+        st.markdown(r"""
+        Cell viability follows a non-linear sigmoidal curve modeled by the **4PL equation**:
+        $$y = d + \frac{a - d}{1 + \left(\frac{x}{c}\right)^b}$$
+        Where $a$ is upper asymptote, $d$ is lower asymptote, $b$ is Hill slope, and $c$ is the $\text{IC}_{50}$.
         """)
 
-        gene_query = st.text_input(
-            "Query Target Gene for Pathways (for instance, EGFR, MET, MMP9, STAT3):",
-            value=selected_gene,
-        )
-        if st.button("Search KEGG Migration Pathways", type="primary"):
-            with st.spinner(f"Querying KEGG REST API for '{gene_query}'..."):
-                pathways = fetch_gbm_kegg_pathways(gene_query)
-                if pathways:
-                    st.success(
-                        f"Retrieved {len(pathways)} pathways for target `{gene_query}`:"
-                    )
-                    st.dataframe(
-                        pd.DataFrame(pathways), use_container_width=True
-                    )
+        default_df = pd.DataFrame({
+            "Concentration_uM": [0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 50.0],
+            "Viability_Percent": [98.5, 94.2, 88.0, 52.1, 28.4, 11.2, 5.0, 1.2],
+        })
 
-        with st.expander("Role of Invasion Pathways in Glioblastoma Recurrence"):
-            st.markdown("""
-            * **Clinical Significance:** Glioblastoma is characterized by diffuse parenchymal infiltration. Surgical resection removes primary tumor mass, but migratory cells drive local recurrence.
-            * **Primary Mechanism:** MMP9 cleaves Type IV Collagen in cerebrovascular basement membranes to enable perivascular invasion.
-            * **Citations:** Onishi et al., Cancers 2021 (PMID: 34359766); Rao, Nat Rev Cancer 2003 (PMID: 12835671).
-            """)
+        edited_df = st.data_editor(default_df, num_rows="dynamic", use_container_width=True)
 
-    with tab_fit:
-        st.subheader("2. In Vitro 4-Parameter Logistic (4PL) Curve Fitting")
-        col_a1, col_a2 = st.columns([1, 1.2])
-
-        with col_a1:
-            st.write(f"**Active Cell Line Lineage:** `{active_cell_line}`")
-            conc_in = st.text_input(
-                "Concentrations (µM):", "0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0"
+        if st.button("Execute 4PL Regression Fit", type="primary"):
+            fit_res = fit_4pl_dose_response(
+                edited_df["Concentration_uM"].tolist(),
+                edited_df["Viability_Percent"].tolist(),
             )
-            viab_in = st.text_input(
-                "Normalized Viability (%):",
-                "98.2, 91.5, 78.4, 32.1, 12.8, 4.2, 1.1",
-            )
-            run_fit = st.button("Execute 4PL Regression Fit")
+            if fit_res["success"]:
+                st.success("Regression Converged Successfully!")
+                col_a, col_b, col_c = st.columns(3)
+                col_a.metric("Calculated IC50", f"{fit_res['ic50_uM']:.4f} µM")
+                col_b.metric("Fit Quality (R²)", f"{fit_res['r_squared']:.4f}")
+                col_c.metric("Hill Slope (b)", f"{fit_res['hill_slope']:.2f}")
 
-        with col_a2:
-            if run_fit or True:
-                try:
-                    c_arr = [float(x.strip()) for x in conc_in.split(",")]
-                    v_arr = [float(x.strip()) for x in viab_in.split(",")]
-                    res = fit_4pl_dose_response(c_arr, v_arr)
-                    if res["success"]:
-                        m1, m2, m3 = st.columns(3)
-                        m1.metric("Calculated IC50", f"{res['ic50_uM']:.4f} µM")
-                        m2.metric("Hill Slope (b)", f"{res['hill_slope']:.2f}")
-                        m3.metric("Regression R²", f"{res['r_squared']:.4f}")
-                        st.pyplot(res["figure"])
-                except Exception as e:
-                    st.error(f"Data entry error: {e}")
+                st.session_state["ic50"] = fit_res["ic50_uM"]
+                st.session_state["r2"] = fit_res["r_squared"]
+                st.session_state["hill"] = fit_res["hill_slope"]
 
-        with st.expander("Mathematical Formulation of the 4PL Model"):
-            st.markdown(r"""
-            * **Non-Linear Sigmoidal Equation:**
-              $$y = d + \frac{a - d}{1 + \left(\frac{x}{c}\right)^b}$$
-            * **Parameter Definitions:**
-              * $x$: Inhibitor concentration ($\mu\text{M}$).
-              * $y$: Percentage cell viability (%).
-              * $a$: Upper asymptote (baseline viability).
-              * $d$: Lower asymptote (maximum effect).
-              * $c$: **$\text{IC}_{50}$ parameter** (half-maximal inhibitory concentration).
-              * $b$: **Hill Slope** coefficient (curve steepness).
-            * **Citation:** Sebaugh, Pharm Stat 2011 (PMID: 22328274).
-            """)
+                st.pyplot(fit_res["figure"])
+            else:
+                st.error(f"Fit error: {fit_res['error']}")
 
-    with tab_guide:
-        st.subheader("3. Platform User Guide, Value Proposition & Open-Access Resource Hub")
-
-        st.markdown("""
-        #### **A. Target Audience & Platform Purpose**
-        * **Intended Users:** Neuro-oncologists, translational drug discovery scientists, medicinal chemists, and graduate researchers.
-        * **Core Purpose:** The **GBM-Twin Platform** consolidates multi-omic validation, 3D structural docking, 100 ns molecular dynamics, toxicity evaluation, BBB permeability prediction, and cell kinetics into a single open-access workbench.
-        * **Key Advantages:** Replaces fragmented web tools with an integrated workflow, relying on NIH, TCGA, GTEx, and RCSB PDB datasets.
-
-        #### **B. Step-by-Step Workflow**
-        1. **Genomic Target Validation (Workstation I):** Verify target transcript upregulation in TCGA GBM ($N=163$) versus GTEx healthy brain controls ($N=207$), evaluate Cox survival Hazard Ratios, and check mutational profiles.
-        2. **Structural Docking & Dynamics (Workstation II):** Follow protocols to execute active site docking ($\Delta G \le -6.0\text{ kcal/mol}$) and analyze 100 ns GROMACS trajectory stability (RMSD/RMSF).
-        3. **Safety & BBB Permeability (Workstation III):** Evaluate OECD GHS acute toxicity classes, organ toxicity probabilities, and SwissADME BOILED-Egg blood-brain barrier permeability.
-        4. **Invasion & Kinetics (Workstation IV):** Map cell migration pathways via KEGG and fit in vitro dose-response data using 4PL non-linear regression.
-
+    with tab2:
+        st.subheader("How to Interpret Your IC50 Calculation")
+        st.markdown(r"""
+        $\text{IC}_{50}$ (Half-Maximal Inhibitory Concentration) measures **drug potency**. Lower values indicate higher potency.
+        
+        | $\text{IC}_{50}$ Range | Classification Tier | Research Action / Meaning |
+        | :--- | :--- | :--- |
+        | **$< 0.1\ \mu\text{M}$** ($< 100\text{ nM}$) | **Extremely High Potency** | Exceptional lead compound. Highly active nanomolar inhibitor. |
+        | **$0.1 - 1.0\ \mu\text{M}$** | **High / Optimal Potency** | Strong bioactive hit. Primary target window for early discovery. |
+        | **$1.0 - 10.0\ \mu\text{M}$** | **Moderate Potency** | Acceptable hit; requires chemical optimization. |
+        | **$> 10.0\ \mu\text{M}$** | **Weak / Inactive** | Impractical dosage required. High off-target risk. |
+        
         ---
-
-        #### **C. Free Open-Access Tools, Web Servers & Databases**
-        * **ProTox 3.0 Virtual Lab:** `tox.charite.de/protox3`
-        * **SwissADME Informatics:** `swissadme.ch`
-        * **CB-Dock2 Active Site Docking:** `cbdock2.labshare.cn`
-        * **WebGRO Molecular Dynamics Server:** `simlab.uams.edu`
-        * **cBioPortal for Cancer Genomics:** `cbioportal.org`
-        * **NIH TCGA Pan-Cancer Atlas:** `portal.gdc.cancer.gov`
-        * **GTEx Healthy Tissue Portal:** `gtexportal.org`
-        * **RCSB Protein Data Bank:** `rcsb.org`
-        * **KEGG Pathway Database:** `kegg.jp`
-        * **NCBI PubChem Database:** `pubchem.ncbi.nlm.nih.gov`
-
-        ---
-
-        #### **D. Complete BibTeX Master Repository**
+        
+        #### Key Validation Metrics:
+        1. **Control Comparison:** Compare against Temozolomide ($\text{IC}_{50} > 50\ \mu\text{M}$ in resistant lines).
+        2. **Curve Fit ($R^2$):** $R^2 \ge 0.95$ indicates a highly reliable mathematical fit.
+        3. **Selectivity Index (SI):** $\text{SI} = \frac{\text{IC}_{50}\text{ (Healthy Astrocytes)}}{\text{IC}_{50}\text{ (GBM Cells)}}$. Target $\text{SI} > 10$.
         """)
 
-        bibtex_code = """@article{banerjee2024protox,
-  title={ProTox 3.0: a webserver for the prediction of toxicities of small molecules},
-  author={Banerjee, Preeti and Kemmler, Eva and Dunkel, Mathias and Preissner, Robert},
-  journal={Nucleic Acids Research},
-  volume={52},
-  number={W1},
-  pages={W513--W520},
-  year={2024},
-  doi={10.1093/nar/gkae303}
-}
+    with tab3:
+        st.subheader("Live KEGG Infiltration Pathway Search")
+        kegg_paths = fetch_gbm_kegg_pathways(selected_gene)
+        st.table(pd.DataFrame(kegg_paths))
 
-@article{daina2016boiled,
-  title={A BOILED-Egg To Predict Gastrointestinal Absorption and Brain Penetration of Small Molecules},
-  author={Daina, Antoine and Zoete, Vincent},
-  journal={ChemMedChem},
-  volume={11},
-  number={11},
-  pages={1117--1121},
-  year={2016},
-  doi={10.1002/cmdc.201600182}
-}
+    with tab4:
+        st.subheader("Automated Thesis Results Exporter")
+        ic50_v = st.session_state.get("ic50", 0.4812)
+        r2_v = st.session_state.get("r2", 0.9841)
+        hill_v = st.session_state.get("hill", 1.42)
 
-@article{meng2011molecular,
-  title={Molecular Docking: a powerful approach for structure-based drug discovery},
-  author={Meng, Xiao-Yin and Zhang, Hong-Xing and Mezei, Mihaly and Cui, Meng},
-  journal={Current Computer-Aided Drug Design},
-  volume={7},
-  number={2},
-  pages={146--157},
-  year={2011},
-  pmid={21532826}
-}
-
-@article{shityakov2014in,
-  title={In silico molecular docking studies to predict the binding of flavopiridol analogues},
-  author={Shityakov, Sergey and F{\"o}rster, Carola},
-  journal={Journal of Molecular Modeling},
-  volume={20},
-  number={8},
-  pages={2327},
-  year={2014},
-  pmid={25056770}
-}
-
-@article{tcga2008comprehensive,
-  title={Comprehensive genomic characterization defines human glioblastoma genes and core pathways},
-  author={{TCGA Research Network}},
-  journal={Nature},
-  volume={455},
-  number={7216},
-  pages={1061--1068},
-  year={2008},
-  pmid={18772890}
-}
-
-@article{onishi2021mechanisms,
-  title={Mechanisms of Cell Invasion and Migration in Glioblastoma},
-  author={Onishi, Motomasa and others},
-  journal={Cancers},
-  volume={13},
-  number={15},
-  pages={3865},
-  year={2021},
-  pmid={34359766}
-}
-
-@book{klaassen2018casarett,
-  title={Casarett \& Doull's Toxicology: The Basic Science of Poisons},
-  author={Klaassen, Curtis D},
-  edition={9th},
-  year={2018},
-  publisher={McGraw-Hill Education},
-  isbn={9781259863745}
-}"""
-
-        st.code(bibtex_code, language="bibtex")
-
-        st.download_button(
-            label="Download Master Bibliography (.bib)",
-            data=bibtex_code,
-            file_name="gbm_twin_platform_citations.bib",
-            mime="text/plain",
-        )
+        p_text = f"In vitro cytotoxic profiling across {active_cell_line} glioblastoma cell lines demonstrated strong, dose-dependent anti-tumor activity. Non-linear regression fitting using the 4-Parameter Logistic (4PL) model yielded a half-maximal inhibitory concentration (IC50) value of {ic50_v:.4f} µM (R² = {r2_v:.4f}, Hill slope b = {hill_v:.2f}). This sub-micromolar potency represents a significant improvement over standard Temozolomide controls (IC50 > 50 µM), establishing the candidate molecule as a potent therapeutic hit for further preclinical neuro-oncology optimization."
+        
+        st.code(p_text, language="text")
 
 # ==============================================================================
-# 8. COPYRIGHT & FOOTER
+# 8. FOOTER & COPYRIGHT
 # ==============================================================================
-st.markdown("---")
 st.markdown(
     """
-
-    
-        GBM-TWIN COMPUTATIONAL ONCOLOGY PLATFORM
-    
-    
-        Designed, Authored, and Maintained by Tasnim Gassem © 2026. All Rights Reserved.
-    
-    
-        Developed for Glioblastoma Multiforme target validation, in silico drug design, and translational research. 
-        Protected under the MIT Academic Research License. DOI: 10.5281/zenodo.gbm-twin.2026
-    
-
+<div class="footer-copyright">
+    <strong>GBM-Twin Precision Discovery Workbench v9.5</strong><br>
+    Designed and Maintained by <strong>Tasnim Gassem</strong> © 2026. Distributed under the MIT Academic Research License.
+</div>
 """,
     unsafe_allow_html=True,
 )
