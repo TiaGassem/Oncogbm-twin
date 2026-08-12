@@ -1379,7 +1379,74 @@ elif (
               * $b$: **Hill Slope** coefficient (curve steepness).
             * **Citation:** Sebaugh, Pharm Stat 2011 (PMID: 22328274).
             """)
+# ==============================================================================
+    # DETAILED 4PL MODEL EXPLANATION TAB
+    # ==============================================================================
+    with tab2:
+        st.subheader(" Detailed 4-Parameter Logistic (4PL) Model Explanation")
+        
+        st.markdown(r"""
+        <div class="academic-guide">
+            <b>What is the 4PL Model?</b><br>
+            The <b>4-Parameter Logistic (4PL) regression model</b> is the universal mathematical gold standard in pharmacology for analyzing bioassays, cell viability experiments, and cytotoxic dose-response curves.
+        </div>
+        """, unsafe_allow_html=True)
 
+        st.markdown("### 1. The Mathematical Equation")
+        st.latex(r"y = d + \frac{a - d}{1 + \left(\frac{x}{c}\right)^b}")
+
+        st.markdown("### 2. Parameter Breakdown")
+        
+        col_p1, col_p2 = st.columns(2)
+        with col_p1:
+            st.markdown(r"""
+            * **$a$ (Upper Asymptote / Baseline Viability):** 
+              The response level at zero drug concentration (untreated control cells, typically $\approx 100\%$ viability).
+              
+            * **$d$ (Lower Asymptote / Maximum Mortality):** 
+              The response level at infinite drug concentration (maximum tumor cell kill, ideally $\approx 0\%$ viability).
+            """)
+        with col_p2:
+            st.markdown(r"""
+            * **$c$ ($\text{IC}_{50}$ - Inflection Point):** 
+              The exact drug concentration ($x$) that produces a response halfway between $a$ and $d$. This is the primary metric for **drug potency**.
+              
+            * **$b$ (Hill Slope / Cooperativity Factor):** 
+              Describes the steepness of the sigmoidal curve. A slope $> 1.0$ indicates cooperative binding, while $< 1.0$ indicates shallow binding.
+            """)
+
+        st.markdown("---")
+        st.markdown("### 3. Why 4PL is Essential in Cancer Research")
+        st.markdown("""
+        1. **Biological Realism:** Cancer cell death does not follow a straight line. At low concentrations, cells resist the drug (top plateau). At high concentrations, drug targets become saturated (bottom plateau). The sigmoidal S-curve models this true biological response.
+        2. **Noise Isolation:** By anchoring top and bottom plateaus, the 4PL equation accurately isolates the true inflection point ($\text{IC}_{50}$) even when high-dose experimental noise occurs in the lab.
+        3. **Standardized Benchmarking:** Enables direct potency comparisons between novel drug candidates and standard chemotherapies like Temozolomide.
+        """)
+
+        st.markdown("---")
+        st.markdown("### 4. Oncology Potency Benchmark Tiers")
+        st.markdown(r"""
+        | $\text{IC}_{50}$ Value Range | Classification Tier | Significance for Glioblastoma |
+        | :--- | :--- | :--- |
+        | **$< 0.1\ \mu\text{M}$** ($< 100\text{ nM}$) | **Extremely High Potency** | Nanomolar lead compound; exceptional binding affinity. |
+        | **$0.1 - 1.0\ \mu\text{M}$** | **High / Optimal Potency** | Sub-micromolar hit; ideal starting point for lead optimization. |
+        | **$1.0 - 10.0\ \mu\text{M}$** | **Moderate Potency** | Active virtual hit; requires medicinal chemistry modifications. |
+        | **$> 10.0\ \mu\text{M}$** | **Weak / Inactive** | High dosage required; high risk of systemic off-target toxicity. |
+        """)
+
+        st.markdown("---")
+        st.markdown("### 5. Statistical Fit Quality ($R^2$) & Selectivity Index")
+        
+        c_val1, c_val2 = st.columns(2)
+        with c_val1:
+            st.info("**Coefficient of Determination ($R^2$):**\n\n"
+                    "Measures how accurately the 4PL curve fits your lab points.\n"
+                    "* **$R^2 \\ge 0.95$:** High statistical reliability.\n"
+                    "* **$R^2 < 0.85$:** High experimental noise or incorrect concentration range.")
+        with c_val2:
+            st.info("**Selectivity Index (SI):**\n\n"
+                    "$$\\text{SI} = \\frac{\\text{IC}_{50}\\text{ (Healthy Astrocytes)}}{\\text{IC}_{50}\\text{ (Glioblastoma Tumor Cells)}}$$\n"
+                    "* **$\\text{SI} > 10$:** Highly selective against cancer cells without killing healthy brain tissue.")
     with tab_guide:
         st.subheader("3. Platform User Guide, Value Proposition & Open-Access Resource Hub")
 
