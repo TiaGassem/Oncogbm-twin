@@ -9,17 +9,9 @@ import pandas as pd
 import requests
 from scipy.optimize import curve_fit
 import streamlit as st
+import streamlit.components.v1 as components
 
-# Optional py3Dmol import with fallback display
-try:
-    import py3Dmol
-    from st_py3dmol import showmol
-
-    PY3DMOL_AVAILABLE = True
-except ImportError:
-    PY3DMOL_AVAILABLE = False
-
-# Optional FPDF import for executive PDF generation
+# Optional FPDF import with automatic text fallback
 try:
     from fpdf import FPDF
 
@@ -370,19 +362,25 @@ st.sidebar.markdown("### Executive Control Hub")
 
 st.sidebar.markdown("#### Quick-Start Research Presets")
 if st.sidebar.button("Load Pre-Configured CDC25A + TMZ Benchmark", type="primary"):
-    st.session_state["selected_gene"] = "CDC25A"
-    st.session_state["selected_drug_preset"] = "Temozolomide (Standard Care)"
+    st.session_state["target_gene_input"] = "CDC25A"
+    st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
     st.session_state["ic50"] = 0.2703
     st.sidebar.success("Loaded CDC25A + TMZ Benchmark Data!")
+
+# Ensure state persistence
+if "target_gene_input" not in st.session_state:
+    st.session_state["target_gene_input"] = "CDC25A"
+if "drug_preset_input" not in st.session_state:
+    st.session_state["drug_preset_input"] = "Temozolomide (Standard Care)"
 
 selected_gene = st.sidebar.selectbox(
     "Select Target Gene:",
     list(GBM_TARGETS.keys()),
-    key="selected_gene_select",
-    index=list(GBM_TARGETS.keys()).index(
-        st.session_state.get("selected_gene", "CDC25A")
-    ),
+    index=list(GBM_TARGETS.keys()).index(st.session_state["target_gene_input"]),
+    key="gene_selector",
 )
+st.session_state["target_gene_input"] = selected_gene
+
 active_cell_line = st.sidebar.selectbox(
     "Glioblastoma Cell Line:",
     [
@@ -398,13 +396,10 @@ st.sidebar.markdown("#### SMILES Candidate Selector")
 selected_drug_preset = st.sidebar.selectbox(
     "Benchmark Anti-GBM Drug:",
     list(BENCHMARK_DRUGS.keys()),
-    key="selected_drug_preset_select",
-    index=list(BENCHMARK_DRUGS.keys()).index(
-        st.session_state.get(
-            "selected_drug_preset", "Temozolomide (Standard Care)"
-        )
-    ),
+    index=list(BENCHMARK_DRUGS.keys()).index(st.session_state["drug_preset_input"]),
+    key="drug_selector",
 )
+st.session_state["drug_preset_input"] = selected_drug_preset
 
 if selected_drug_preset != "Custom SMILES Input":
     quick_smiles = BENCHMARK_DRUGS[selected_drug_preset]
@@ -709,16 +704,12 @@ def plot_kaplan_meier_survival(
         f"Adjusted HR = {hr:.2f}\nLog-rank p = {p_val:.4f}\nCohort Filter: {subtype}",
         fontsize=8.0,
         fontweight="bold",
-        bbox=dict(
-            boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1
-        ),
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1),
     )
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(
-        loc="upper right", frameon=True, facecolor="white", fontsize=8
-    )
+    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
     plt.tight_layout()
     return fig
 
@@ -919,9 +910,7 @@ def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(
-        loc="upper right", frameon=True, facecolor="white", fontsize=8
-    )
+    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
     plt.tight_layout()
     return fig
 
@@ -993,26 +982,58 @@ def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
 
 
 def generate_pdf_prospectus(gene, smiles, ic50, ci_score):
-    if not FPDF_AVAILABLE:
-        return None
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Helvetica", "B", 16)
-    pdf.cell(
-        0, 10, f"GBM-Twin Executive Prospectus: {gene} Target", ln=True, align="C"
-    )
-    pdf.set_font("Helvetica", "", 11)
-    pdf.ln(5)
-    pdf.cell(0, 8, f"Evaluated Candidate SMILES: {smiles}", ln=True)
-    pdf.cell(0, 8, f"4PL In Vitro IC50 Value: {ic50:.4f} uM", ln=True)
-    pdf.cell(0, 8, f"Chou-Talalay Combination Index (CI): {ci_score:.3f}", ln=True)
-    pdf.ln(10)
-    pdf.multi_cell(
-        0,
-        6,
-        "Methodological Validation: Grounded in mass-action kinetic principles (Chou & Talalay, 1984) and powered by TCGA Pan-Cancer Atlas APIs.",
-    )
-    return pdf.output()
+    if FPDF_AVAILABLE:
+        try:
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Helvetica", "B", 16)
+            pdf.cell(
+                0,
+                10,
+                f"GBM-Twin Executive Prospectus: {gene} Target",
+                ln=True,
+                align="C",
+            )
+            pdf.set_font("Helvetica", "", 11)
+            pdf.ln(5)
+            pdf.cell(0, 8, f"Evaluated Candidate SMILES: {smiles}", ln=True)
+            pdf.cell(0, 8, f"4PL In Vitro IC50 Value: {ic50:.4f} uM", ln=True)
+            pdf.cell(
+                0, 8, f"Chou-Talalay Combination Index (CI): {ci_score:.3f}", ln=True
+            )
+            pdf.ln(10)
+            pdf.multi_cell(
+                0,
+                6,
+                "Methodological Validation: Grounded in mass-action kinetic principles (Chou & Talalay, 1984) and powered by TCGA Pan-Cancer Atlas APIs.",
+            )
+            return pdf.output()
+        except Exception:
+            pass
+
+    # Fallback to text file report if FPDF is absent or encounters an error
+    report_text = f"""================================================================
+GBM-TWIN PLATFORM EXECUTIVE DOSSIER REPORT
+Author: Tasnim Gassem | License: MIT Academic License 2026
+================================================================
+
+Target Gene Symbol: {gene}
+Evaluated Candidate SMILES: {smiles}
+Calculated 4PL IC50 Potency: {ic50:.4f} uM
+Chou-Talalay Combination Index (CI): {ci_score:.3f}
+
+Synergy Interpretation:
+CI < 0.7  ==> Strong Synergy (Lower Dosing, Defeats Resistance)
+0.7-0.9   ==> Moderate Synergy
+0.9-1.1   ==> Additive Effect
+CI > 1.1  ==> Antagonism
+
+Primary Data Sources & References:
+- NIH/NCI Cancer Genome Atlas (TCGA Pan-Cancer Atlas)
+- Genotype-Tissue Expression (GTEx Portal)
+- Chou & Talalay, Adv Enzyme Regul 1984 (PMID: 6382108)
+================================================================"""
+    return report_text.encode("utf-8")
 
 
 # ==============================================================================
@@ -1223,18 +1244,10 @@ elif master_module == "Workstation II: Docking & 100ns MD Simulation Guide":
             max_chars=4,
         )
 
-        if PY3DMOL_AVAILABLE:
-            try:
-                view = py3Dmol.view(query=f"pdb:{pdb_id_input.lower()}")
-                view.setStyle({"cartoon": {"color": "spectrum"}})
-                view.addSurface(py3Dmol.VDW, {"opacity": 0.3, "color": "white"})
-                view.zoomTo()
-                showmol(view, height=450, width=800)
-                st.caption(f"Rendering RCSB PDB ID: {pdb_id_input.upper()} via WebGL Py3Dmol")
-            except Exception as e:
-                st.warning(f"Could not render PDB {pdb_id_input}: {e}")
-        else:
-            st.info("Py3Dmol engine is offline. Install `py3Dmol` and `st-py3dmol` to render interactive 3D protein structures.")
+        # Native WebGL RCSB Mol* Viewer via iFrame (Guaranteed to work without missing C-dependencies)
+        rcsb_viewer_url = f"https://www.rcsb.org/3d-view/{pdb_id_input.upper()}"
+        components.iframe(rcsb_viewer_url, height=500, scrolling=True)
+        st.caption(f"Live Interactive RCSB Mol* WebGL Viewer for PDB Entry: **{pdb_id_input.upper()}**")
 
     with tab_sim:
         st.subheader("3. 100 ns Trajectory Stability (RMSD & RMSF Profiler)")
@@ -1667,15 +1680,16 @@ elif (
         with col_res1:
             st.metric("Combination Index (CI)", f"{ci_val:.3f}")
 
-            if FPDF_AVAILABLE:
-                pdf_data = generate_pdf_prospectus(selected_gene, quick_smiles, ic50_drug1, ci_val)
-                if pdf_data:
-                    st.download_button(
-                        label="Download Executive Prospectus (PDF)",
-                        data=pdf_data,
-                        file_name=f"GBM_Twin_Prospectus_{selected_gene}.pdf",
-                        mime="application/pdf",
-                    )
+            prospectus_bytes = generate_pdf_prospectus(selected_gene, quick_smiles, ic50_drug1, ci_val)
+            mime_type = "application/pdf" if FPDF_AVAILABLE else "text/plain"
+            ext_type = "pdf" if FPDF_AVAILABLE else "txt"
+
+            st.download_button(
+                label=f"Download Executive Dossier ({ext_type.upper()})",
+                data=prospectus_bytes,
+                file_name=f"GBM_Twin_Prospectus_{selected_gene}.{ext_type}",
+                mime=mime_type,
+            )
 
         with col_res2:
             if ci_val < 0.7:
@@ -1752,7 +1766,7 @@ elif (
            * Inspect somatic mutation rates via the cBioPortal REST API.
 
         3. **Structural Docking, 3D Viewer & Dynamics (Workstation II):**
-           * Inspect active site crystal coordinates using the interactive 3D WebGL viewer (`py3Dmol`).
+           * Inspect active site crystal coordinates using the interactive 3D WebGL viewer powered by RCSB Mol*.
            * Submit candidate SMILES strings to **CB-Dock2** or **SwissDock** to calculate binding free energy ($\Delta G \le -6.0\text{ kcal/mol}$).
            * Execute 100 ns explicit-solvent GROMACS MD simulations to extract $\text{C}\alpha$ backbone **RMSD** ($< 2.0\text{ \AA}$) and **RMSF** trajectory stability profiles.
 
@@ -1765,7 +1779,7 @@ elif (
            * Map target-mediated invasion pathways via the KEGG REST API.
            * Fit experimental dose-response viability data using non-linear 4-Parameter Logistic (4PL) regression to determine $\text{IC}_{50}$ values.
            * Use the **Chou-Talalay Synergy Engine** to calculate Dual- or Triple-Drug Combination Index ($\text{CI}$) values against Temozolomide ($\text{TMZ}$).
-           * Export a single-click **Executive Prospectus PDF** report.
+           * Export a single-click **Executive Dossier** report.
 
         ---
 
