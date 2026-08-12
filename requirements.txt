@@ -5,3 +5,5 @@ pandas>=2.0.0
 scipy>=1.10.0
 scikit-learn>=1.2.0
 matplotlib>=3.7.0
+py3Dmol>=2.0.0
+st-py3dmol>=0.0.1
