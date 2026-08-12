@@ -62,6 +62,7 @@ st.markdown(
         color: #94A3B8;
         margin-top: 0.35rem;
         font-weight: 400;
+        line-height: 1.5;
     }
 
     .status-badge {
@@ -403,8 +404,10 @@ st.markdown(
     <span class="status-badge">GBM-TWIN PLATFORM v9.5 | AUTHOR: TASNIM GASSEM</span>
     <div class="banner-title">Glioblastoma Precision Oncology & In Silico Discovery Workbench</div>
     <div class="banner-subtitle">
-        Integrates Multi-Omic Cohort Data, Structural Molecular Docking, 100ns MD Protocols, ProTox-3 Toxicity Estimators, 
-        BOILED-Egg BBB Permeability Models, Live Invasion Pathways, 4PL Kinetics & Drug Synergy Engines.
+        A multi-layered computational platform integrating public multi-omic cohorts (TCGA/CGGA), structural molecular docking, 
+        100ns molecular dynamics (MD) simulations, ProTox-3 toxicity prediction, BOILED-Egg blood-brain barrier (BBB) permeability models, 
+        and 4PL kinetic drug synergy algorithms to accelerate novel therapeutic discovery against glioblastoma.<br>
+        <i>Note: Refer to the step-by-step user guide located in the final tab of Workstation IV for detailed execution protocols.</i>
     </div>
 </div>
 """,
@@ -1490,16 +1493,19 @@ elif (
         st.markdown(r"""
         <div class="academic-guide">
             <b>Targeting Chemotherapeutic Resistance in Glioblastoma Stem Cells (GSCs):</b><br>
-            Single-agent therapies frequently fail in high-grade gliomas due to redundant signal redundancy and MGMT-mediated alkylation repair. 
-            This engine applies the <b>Chou-Talalay Combination Index ($\text{CI}$) theorem</b> to quantify synergistic enhancement between your novel hit candidate and <b>Temozolomide (TMZ)</b>.
+            • <b>What it is:</b> An automated quantitative tool implementing the Chou-Talalay Median-Effect Combination Index ($\text{CI}$) equation.<br>
+            • <b>Why you need it:</b> Single-agent therapies frequently fail in high-grade gliomas due to pathway redundancy and MGMT-mediated repair. This module determines whether combining your candidate with Temozolomide (TMZ) produces true synergy, simple additivity, or unwanted antagonism.<br>
+            • <b>How to use it:</b> Input individual monotherapy $\text{IC}_{50}$ values for both drugs, enter combination doses yielding 50% cell kill ($f_a = 0.50$), and evaluate the resulting Combination Index ($\text{CI}$).<br>
+            • <b>Benefits:</b> Replaces manual dose-effect plotting with automated calculations, helping reduce systemic drug toxicity and defeat TMZ resistance.<br>
+            • <b>Credibility & Data Source:</b> Built upon peer-reviewed mass-action models leveraging public open-access APIs (PubChem REST API, ChEMBL, TCGA OpenAPI).
         </div>
         """, unsafe_allow_html=True)
 
         col_syn1, col_syn2 = st.columns(2)
 
         with col_syn1:
-            st.markdown("##### 1. Single Monotherapy Potencies ($\text{IC}_{50}$)")
-            default_candidate_ic50 = st.session_state.get("ic50", 0.4812)
+            st.markdown(r"##### 1. Single Monotherapy Potencies ($\text{IC}_{50}$)")
+            default_candidate_ic50 = st.session_state.get("ic50", 0.2703)
             ic50_drug1 = st.number_input(
                 "Candidate Hit Monotherapy IC50 (µM):",
                 value=float(default_candidate_ic50),
@@ -1528,7 +1534,7 @@ elif (
                 format="%.1f",
             )
 
-        # Chou-Talalay Non-Mutually Exclusive / Mutually Exclusive Equation
+        # Chou-Talalay Combination Index Calculation
         ci_val = (combo_d1 / ic50_drug1) + (combo_d2 / ic50_tmz)
 
         st.markdown("---")
@@ -1591,23 +1597,44 @@ elif (
     # TAB 4: USER GUIDE & BIBLIOGRAPHY
     # --------------------------------------------------------------------------
     with tab_guide:
-        st.subheader("4. Platform User Guide, Value Proposition & Master Academic Library")
+        st.subheader("4. Platform Master User Guide & Open-Access Library")
 
-        st.markdown("""
-        #### **A. Target Audience & Platform Purpose**
-        * **Intended Users:** Neuro-oncologists, translational drug discovery scientists, medicinal chemists, and graduate researchers.
-        * **Core Purpose:** The **GBM-Twin Platform** consolidates multi-omic validation, 3D structural docking, 100 ns molecular dynamics, toxicity evaluation, BBB permeability prediction, cell kinetics, and drug synergy into a single open-access workbench.
-        * **Key Advantages:** Replaces fragmented web tools with an integrated workflow, relying on NIH, TCGA, GTEx, and RCSB PDB datasets.
+        st.markdown(r"""
+        <div class="academic-guide">
+            <b>Platform Overview & Master User Guide:</b><br>
+            The <b>GBM-Twin Platform</b> is an open-access translational workbench integrating public multi-omic cohorts (TCGA/CGGA), 
+            3D structural docking, 100ns molecular dynamics protocols, ProTox-3 toxicity engines, BOILED-Egg BBB permeability models, 
+            4PL kinetics, and Chou-Talalay drug synergy algorithms into a unified pipeline.
+        </div>
+        """, unsafe_allow_html=True)
 
-        #### **B. Step-by-Step Workflow**
-        1. **Genomic Target Validation (Workstation I):** Verify target transcript upregulation in TCGA GBM ($N=163$) versus GTEx healthy brain controls ($N=207$), evaluate Cox survival Hazard Ratios, and check mutational profiles.
-        2. **Structural Docking & Dynamics (Workstation II):** Follow protocols to execute active site docking ($\Delta G \le -6.0\text{ kcal/mol}$) and analyze 100 ns GROMACS trajectory stability (RMSD/RMSF).
-        3. **Safety & BBB Permeability (Workstation III):** Evaluate OECD GHS acute toxicity classes, organ toxicity probabilities, and SwissADME BOILED-Egg blood-brain barrier permeability.
-        4. **Invasion, Kinetics & Synergy (Workstation IV):** Map cell migration pathways via KEGG, fit in vitro dose-response data using 4PL non-linear regression, and calculate Chou-Talalay drug synergy indices.
+        st.markdown(r"""
+        #### **A. Step-by-Step User Workflow**
+
+        1. **Target Selection & Genomic Validation (Workstation I):**
+           * Select your candidate target gene (e.g., **CDC25A**) from the primary sidebar dropdown.
+           * Analyze differential transcript upregulation comparing TCGA Glioblastoma tumors ($N=163$) against GTEx normal brain controls ($N=207$).
+           * Review Cox survival Hazard Ratios ($\text{HR}$) and log-rank $p$-values to confirm target prognostic relevance.
+           * Inspect somatic mutation rates via the cBioPortal REST API.
+
+        2. **Structural Docking & Molecular Dynamics (Workstation II):**
+           * Retrieve active site crystal structures from RCSB PDB (e.g., PDB ID `1C25`).
+           * Submit candidate SMILES strings to **CB-Dock2** or **SwissDock** to calculate binding free energy ($\Delta G \le -6.0\text{ kcal/mol}$).
+           * Execute 100 ns explicit-solvent GROMACS MD simulations to extract $\text{C}\alpha$ backbone **RMSD** ($< 2.0\text{ \AA}$) and **RMSF** trajectory stability profiles.
+
+        3. **ADMET & BBB Permeability Predictor (Workstation III):**
+           * Evaluate acute oral toxicity classes ($\text{LD}_{50}$) based on OECD Guideline 423.
+           * Inspect organ-specific safety endpoints (hepatoxicity, hERG channel blockage, cytotoxicity).
+           * Check passive Blood-Brain Barrier (BBB) penetration using the **SwissADME BOILED-Egg** model ($\text{TPSA} < 75\text{ \AA}^2$, $0.5 < \text{WLOGP} < 3.5$).
+
+        4. **Invasion Pathways, 4PL Kinetics & Drug Synergy (Workstation IV):**
+           * Map target-mediated invasion pathways via the KEGG REST API.
+           * Fit experimental dose-response viability data using non-linear 4-Parameter Logistic (4PL) regression to determine $\text{IC}_{50}$ values.
+           * Use the **Chou-Talalay Synergy Engine** to calculate the Combination Index ($\text{CI}$) when pairing your candidate hit with Temozolomide ($\text{TMZ}$).
 
         ---
 
-        #### **C. Free Open-Access Tools, Web Servers & Databases**
+        #### **B. Free Open-Access Tools, Web Servers & Databases**
         * **ProTox 3.0 Virtual Lab:** `tox.charite.de/protox3`
         * **SwissADME Informatics:** `swissadme.ch`
         * **CB-Dock2 Active Site Docking:** `cbdock2.labshare.cn`
@@ -1621,7 +1648,7 @@ elif (
 
         ---
 
-        #### **D. Complete BibTeX Master Repository**
+        #### **C. Complete BibTeX Master Repository**
         """)
 
         bibtex_code = """@article{banerjee2024protox,
