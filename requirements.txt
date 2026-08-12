@@ -1,7 +1,8 @@
-streamlit>=1.30.0
-numpy
+streamlit
 pandas
-matplotlib
+numpy
 scipy
+plotly
 requests
-fpdf2
+matplotlib
+fpdf
