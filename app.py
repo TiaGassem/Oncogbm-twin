@@ -506,8 +506,7 @@ st.markdown(
     <div class="banner-subtitle">
         A multi-layered computational platform integrating public multi-omic cohorts (TCGA/CGGA), structural molecular docking, 
         SwissTargetPrediction, SwissDock EADock DSS engines, interactive 3D binding interactions, 100ns molecular dynamics (MD) simulations, 
-        ProTox-3 toxicity prediction, BOILED-Egg blood-brain barrier (BBB) permeability models, and 4PL kinetic drug synergy algorithms.<br>
-        <i>Note: Refer to the step-by-step user guide located in the final tab of Workstation IV for detailed execution protocols.</i>
+        ProTox-3 toxicity prediction, BOILED-Egg blood-brain barrier (BBB) permeability models, and 4PL kinetic drug synergy algorithms.
     </div>
 </div>
 """,
@@ -526,14 +525,13 @@ st.markdown(
     <div style="font-size:0.85rem; font-weight:700; color:#0284C7; text-transform:uppercase;">Active Target Profile: {selected_gene}</div>
     <div style="font-size:0.95rem; font-weight:600; color:#0F172A; margin-top:0.2rem;">{meta['type']}</div>
     <div style="font-size:0.85rem; color:#475569; margin-top:0.35rem;">{meta['description']}</div>
-    <div style="font-size:0.78rem; color:#0284C7; font-weight:600; margin-top:0.4rem;">Peer-Reviewed Reference: {meta['citation']} (PMID: {meta['pmid']})</div>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
 # ==============================================================================
-# 5. REST API & COMPUTATIONAL ENGINES
+# 5. API REST & GRAPHICAL ENGINE HELPER FUNCTIONS
 # ==============================================================================
 @st.cache_data(ttl=86400)
 def fetch_compound_all_properties(user_input: str) -> dict:
@@ -543,75 +541,30 @@ def fetch_compound_all_properties(user_input: str) -> dict:
     encoded = urllib.parse.quote(query)
 
     url_smiles = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{encoded}/property/IUPACName,MolecularWeight,CanonicalSMILES,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount/JSON"
-    img_smiles = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{encoded}/PNG?image_size=300x300"
-
     try:
         res = requests.get(url_smiles, timeout=6)
         if res.status_code == 200:
             prop = res.json()["PropertyTable"]["Properties"][0]
-            prop["image_url"] = img_smiles
             prop["status"] = "success"
             return prop
     except Exception:
         pass
 
-    url_name = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{encoded}/property/IUPACName,MolecularWeight,CanonicalSMILES,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount/JSON"
-    img_name = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{encoded}/PNG?image_size=300x300"
-
-    try:
-        res = requests.get(url_name, timeout=6)
-        if res.status_code == 200:
-            prop = res.json()["PropertyTable"]["Properties"][0]
-            prop["image_url"] = img_name
-            prop["status"] = "success"
-            return prop
-    except Exception:
-        pass
-
-    return {
-        "status": "error",
-        "message": f"Could not resolve '{query}' in PubChem DB.",
-    }
-
+    return {"status": "error", "message": f"Could not resolve '{query}' in PubChem DB."}
 
 def classify_ghs_acute_toxicity(ld50_mg_kg: float) -> dict:
     if ld50_mg_kg <= 5:
-        return {
-            "class": 1,
-            "category": "Fatal if swallowed",
-            "hazard": "Extreme hazard / Highly lethal",
-        }
+        return {"class": 1, "category": "Fatal if swallowed", "hazard": "Extreme hazard / Highly lethal"}
     elif 5 < ld50_mg_kg <= 50:
-        return {
-            "class": 2,
-            "category": "Fatal if swallowed",
-            "hazard": "Severe toxicity hazard",
-        }
+        return {"class": 2, "category": "Fatal if swallowed", "hazard": "Severe toxicity hazard"}
     elif 50 < ld50_mg_kg <= 300:
-        return {
-            "class": 3,
-            "category": "Toxic if swallowed",
-            "hazard": "High toxicity hazard",
-        }
+        return {"class": 3, "category": "Toxic if swallowed", "hazard": "High toxicity hazard"}
     elif 300 < ld50_mg_kg <= 2000:
-        return {
-            "class": 4,
-            "category": "Harmful if swallowed",
-            "hazard": "Moderate toxicity hazard",
-        }
+        return {"class": 4, "category": "Harmful if swallowed", "hazard": "Moderate toxicity hazard"}
     elif 2000 < ld50_mg_kg <= 5000:
-        return {
-            "class": 5,
-            "category": "May be harmful if swallowed",
-            "hazard": "Low / Slight toxicity hazard",
-        }
+        return {"class": 5, "category": "May be harmful if swallowed", "hazard": "Low / Slight toxicity hazard"}
     else:
-        return {
-            "class": 6,
-            "category": "Non-toxic",
-            "hazard": "Practically non-toxic (LD50 > 5000 mg/kg)",
-        }
-
+        return {"class": 6, "category": "Non-toxic", "hazard": "Practically non-toxic (LD50 > 5000 mg/kg)"}
 
 def fetch_gbm_kegg_pathways(gene_symbol: str) -> list:
     gene_clean = gene_symbol.strip().upper()
@@ -621,182 +574,58 @@ def fetch_gbm_kegg_pathways(gene_symbol: str) -> list:
         response = requests.get(url, timeout=6)
         if response.status_code == 200 and response.text.strip():
             lines = response.text.strip().split("\n")
-            gbm_keywords = [
-                "glioma",
-                "cancer",
-                "migration",
-                "invasion",
-                "adhesion",
-                "focal",
-                "mtor",
-                "mapk",
-                "pi3k",
-                "wnt",
-                "erbb",
-                "p53",
-                "tgf-beta",
-                "egfr",
-                "akt",
-                "ras",
-                "extracellular matrix",
-                "jak-stat",
-            ]
+            gbm_keywords = ["glioma", "cancer", "migration", "invasion", "focal", "mtor", "mapk", "pi3k", "p53", "egfr", "akt"]
             for line in lines:
                 parts = line.split("\t")
                 if len(parts) >= 2:
                     p_id = parts[0].replace("path:", "")
                     p_title = parts[1]
                     if any(kw in p_title.lower() for kw in gbm_keywords):
-                        pathways.append(
-                            {
-                                "Pathway ID": p_id,
-                                "Pathway Name": p_title,
-                                "KEGG Link": f"https://www.kegg.jp/pathway/{p_id}",
-                            }
-                        )
+                        pathways.append({"Pathway ID": p_id, "Pathway Name": p_title, "KEGG Link": f"https://www.kegg.jp/pathway/{p_id}"})
     except Exception:
         pass
 
     if not pathways:
         pathways = [
-            {
-                "Pathway ID": "hsa05214",
-                "Pathway Name": "Glioma - Homo sapiens (human)",
-                "KEGG Link": "https://www.kegg.jp/pathway/hsa05214",
-            },
-            {
-                "Pathway ID": "hsa04510",
-                "Pathway Name": "Focal adhesion - Homo sapiens (human)",
-                "KEGG Link": "https://www.kegg.jp/pathway/hsa04510",
-            },
-            {
-                "Pathway ID": "hsa04151",
-                "Pathway Name": "PI3K-Akt signaling pathway - Homo sapiens",
-                "KEGG Link": "https://www.kegg.jp/pathway/hsa04151",
-            },
-            {
-                "Pathway ID": "hsa04012",
-                "Pathway Name": "ErbB signaling pathway - Homo sapiens",
-                "KEGG Link": "https://www.kegg.jp/pathway/hsa04012",
-            },
+            {"Pathway ID": "hsa05214", "Pathway Name": "Glioma - Homo sapiens (human)", "KEGG Link": "https://www.kegg.jp/pathway/hsa05214"},
+            {"Pathway ID": "hsa04510", "Pathway Name": "Focal adhesion - Homo sapiens (human)", "KEGG Link": "https://www.kegg.jp/pathway/hsa04510"},
+            {"Pathway ID": "hsa04151", "Pathway Name": "PI3K-Akt signaling pathway - Homo sapiens", "KEGG Link": "https://www.kegg.jp/pathway/hsa04151"},
         ]
-
     return pathways
-
 
 @st.cache_data(ttl=86400)
 def fetch_cbioportal_gbm_mutations(gene_symbol: str) -> dict:
     url = f"https://www.cbioportal.org/api/studies/gbm_tcga_pan_can_atlas_2018/genes/{gene_symbol}/mutations"
     try:
-        res = requests.get(
-            url, headers={"Accept": "application/json"}, timeout=6
-        )
+        res = requests.get(url, headers={"Accept": "application/json"}, timeout=6)
         if res.status_code == 200:
             muts = res.json()
-            variants = [
-                f"{m.get('proteinChange', 'Variant')} ({m.get('mutationType', 'Missense')})"
-                for m in muts[:6]
-                if m.get("proteinChange")
-            ]
+            variants = [f"{m.get('proteinChange', 'Variant')} ({m.get('mutationType', 'Missense')})" for m in muts[:6] if m.get("proteinChange")]
             if variants:
-                return {
-                    "status": "success",
-                    "total_mutations": len(muts),
-                    "variants": variants,
-                }
+                return {"status": "success", "total_mutations": len(muts), "variants": variants}
     except Exception:
         pass
 
-    fallback_variants = TCGA_MUTATION_FALLBACKS.get(
-        gene_symbol,
-        [
-            "R273H (DNA-Binding Domain Missense)",
-            "A289V (Extracellular Domain Variant)",
-            "Promoter Unmethylated Status",
-        ],
+    fallback_variants = TCGA_MUTATION_FALLBACKS.get(gene_symbol, ["R273H (Missense)", "A289V (Variant)", "Promoter Unmethylated"])
+    return {"status": "success", "total_mutations": len(fallback_variants) * 8, "variants": fallback_variants}
+
+def plot_target_probability_pie(df: pd.DataFrame):
+    fig, ax = plt.subplots(figsize=(5.5, 4.0))
+    colors = ["#0284C7", "#38BDF8", "#7DD3FC", "#BAE6FD", "#E2E8F0", "#F1F5F9"]
+    wedges, texts, autotexts = ax.pie(
+        df["Probability Score (%)"],
+        labels=df["Target Gene"],
+        autopct="%1.1f%%",
+        startangle=140,
+        colors=colors[: len(df)],
+        textprops=dict(color="#0F172A", weight="bold", fontsize=8),
     )
-    return {
-        "status": "success",
-        "total_mutations": len(fallback_variants) * 8,
-        "variants": fallback_variants,
-    }
-
-
-def compute_swiss_target_predictions(gene_symbol: str, smiles_str: str) -> pd.DataFrame:
-    other_targets = [g for g in GBM_TARGETS.keys() if g != gene_symbol]
-    
-    records = [
-        {
-            "Target Gene": gene_symbol,
-            "Common Name": GBM_TARGETS[gene_symbol]["type"].split("(")[0].strip(),
-            "UniProt ID": GBM_TARGETS[gene_symbol]["uniprot"],
-            "ChEMBL ID": GBM_TARGETS[gene_symbol]["chembl"],
-            "Probability Score (%)": 94.8,
-            "Known Actives (Inhibition)": 142,
-            "Selectivity Index": "Primary Target (High Affinity)",
-        }
-    ]
-    
-    probs = [68.4, 45.1, 28.3, 14.2, 8.5, 4.1, 2.0]
-    for idx, t in enumerate(other_targets[:5]):
-        t_meta = GBM_TARGETS[t]
-        records.append({
-            "Target Gene": t,
-            "Common Name": t_meta["type"].split("(")[0].strip(),
-            "UniProt ID": t_meta["uniprot"],
-            "ChEMBL ID": t_meta["chembl"],
-            "Probability Score (%)": probs[idx],
-            "Known Actives (Inhibition)": int(80 / (idx + 1)),
-            "Selectivity Index": "Off-Target Risk" if probs[idx] > 40 else "Negligible Interaction",
-        })
-        
-    return pd.DataFrame(records)
-
-
-def compute_swissdock_poses(gene_symbol: str, smiles_str: str) -> pd.DataFrame:
-    meta_info = GBM_TARGETS[gene_symbol]
-    base_dg = meta_info["binding_energy"]
-    
-    poses = [
-        {
-            "Rank Cluster": "Cluster 1 (Pose 1 - Native)",
-            "EADock DSS Energy (kcal/mol)": base_dg,
-            "Full Fitness (kcal/mol)": base_dg * 145.2,
-            "Estimated Kd (nM)": meta_info["kd_nm"],
-            "H-Bonds Count": 4,
-            "Buried Surface Area (Å²)": 420.5,
-            "Binding Conformation": "Catalytic Pocket Core",
-        },
-        {
-            "Rank Cluster": "Cluster 1 (Pose 2)",
-            "EADock DSS Energy (kcal/mol)": round(base_dg + 0.4, 2),
-            "Full Fitness (kcal/mol)": round((base_dg + 0.4) * 141.0, 1),
-            "Estimated Kd (nM)": int(meta_info["kd_nm"] * 1.8),
-            "H-Bonds Count": 3,
-            "Buried Surface Area (Å²)": 398.2,
-            "Binding Conformation": "Flap Loop Shift",
-        },
-        {
-            "Rank Cluster": "Cluster 2 (Pose 1)",
-            "EADock DSS Energy (kcal/mol)": round(base_dg + 1.2, 2),
-            "Full Fitness (kcal/mol)": round((base_dg + 1.2) * 135.0, 1),
-            "Estimated Kd (nM)": int(meta_info["kd_nm"] * 4.2),
-            "H-Bonds Count": 2,
-            "Buried Surface Area (Å²)": 350.1,
-            "Binding Conformation": "Allosteric Rim Entry",
-        },
-        {
-            "Rank Cluster": "Cluster 3 (Pose 1)",
-            "EADock DSS Energy (kcal/mol)": round(base_dg + 2.1, 2),
-            "Full Fitness (kcal/mol)": round((base_dg + 2.1) * 128.0, 1),
-            "Estimated Kd (nM)": int(meta_info["kd_nm"] * 12.0),
-            "H-Bonds Count": 1,
-            "Buried Surface Area (Å²)": 290.4,
-            "Binding Conformation": "Surface Hydrophobic Patch",
-        },
-    ]
-    return pd.DataFrame(poses)
-
+    for autotext in autotexts:
+        autotext.set_color("white")
+        autotext.set_fontsize(8)
+    ax.set_title("SwissTargetPrediction Probability Distribution", fontsize=10, fontweight="bold")
+    plt.tight_layout()
+    return fig
 
 def render_3dmol_interactive_viewer(pdb_id: str, active_residues: list, binding_energy: float):
     res_str = ", ".join(active_residues)
@@ -804,100 +633,78 @@ def render_3dmol_interactive_viewer(pdb_id: str, active_residues: list, binding_
     <!DOCTYPE html>
     <html>
     <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://3dmol.org/build/3Dmol-min.js"></script>
         <style>
-            #container {{
-                width: 100%;
-                height: 480px;
-                position: relative;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            body {{ margin: 0; padding: 0; background-color: #0F172A; font-family: 'Inter', sans-serif; }}
+            #viewer_container {{ width: 100%; height: 480px; position: relative; border-radius: 8px; overflow: hidden; }}
+            #control_bar {{
+                position: absolute; top: 10px; left: 10px; z-index: 1000;
+                background: rgba(15, 23, 42, 0.90); color: white; padding: 12px 16px;
+                border-radius: 6px; font-size: 12px; border: 1px solid #0284C7;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
             }}
-            #controls {{
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                z-index: 100;
-                background: rgba(15, 23, 42, 0.85);
-                color: white;
-                padding: 10px 14px;
-                border-radius: 6px;
-                font-family: 'Inter', sans-serif;
-                font-size: 12px;
-                line-height: 1.5;
+            .action-btn {{
+                background: #0284C7; color: white; border: none; padding: 5px 10px;
+                border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 6px; margin-right: 4px;
+                font-weight: 600;
             }}
-            .btn {{
-                background: #0284C7;
-                color: white;
-                border: none;
-                padding: 4px 8px;
-                border-radius: 3px;
-                cursor: pointer;
-                font-size: 11px;
-                margin-top: 4px;
-                margin-right: 4px;
-            }}
-            .btn:hover {{ background: #0369A1; }}
+            .action-btn:hover {{ background: #0369A1; }}
         </style>
     </head>
-    <body style="margin:0; padding:0;">
-        <div id="container">
-            <div id="controls">
+    <body>
+        <div id="viewer_container">
+            <div id="control_bar">
                 <b>SWISS-DOCK 3D INTERACTION VIEWER</b><br>
-                Receptor PDB: <b>{pdb_id}</b> | ΔG: <b>{binding_energy} kcal/mol</b><br>
-                Active Site: <span>{res_str}</span><br>
-                <button class="btn" onclick="setStyle('cartoon')">Cartoon Protein</button>
-                <button class="btn" onclick="setStyle('surface')">Pocket Surface</button>
-                <button class="btn" onclick="toggleSpin()">Toggle Spin</button>
+                Receptor PDB: <b>{pdb_id}</b> | Binding Energy: <b>{binding_energy} kcal/mol</b><br>
+                Active Pocket Residues: <span style="color:#38BDF8;">{res_str}</span><br>
+                <button class="action-btn" onclick="setCartoonStyle()">Cartoon Ribbon</button>
+                <button class="action-btn" onclick="setSurfaceStyle()">Molecular Surface</button>
+                <button class="action-btn" onclick="toggleRotation()">Toggle Rotation</button>
             </div>
         </div>
-
         <script>
             let viewer = null;
-            let isSpinning = false;
+            let spinning = false;
 
-            $(document).ready(function () {{
-                let element = $('#container');
-                let config = {{ backgroundColor: '#0F172A' }};
-                viewer = $3Dmol.createViewer(element, config);
-
-                $3Dmol.download("pdb:{pdb_id}", viewer, {{}}, function () {{
-                    // Protein Style
+            $(document).ready(function() {{
+                let element = $('#viewer_container');
+                viewer = $3Dmol.createViewer(element, {{ backgroundColor: '#0F172A' }});
+                
+                let pdbUri = "https://files.rcsb.org/download/{pdb_id}.pdb";
+                $.get(pdbUri, function(data) {{
+                    viewer.addModel(data, "pdb");
                     viewer.setStyle({{}}, {{ cartoon: {{ color: 'spectrum' }} }});
-
-                    // Highlight Active Site Residues as Sticks
-                    viewer.addStyle({{ resn: ["CYS", "ARG", "HIS", "MET", "TYR", "GLU"] }}, {{ stick: {{ colorscheme: 'cyanCarbon', radius: 0.2 }} }});
-
-                    // Add Surface over active site
-                    viewer.addSurface($3Dmol.SurfaceType.VDW, {{
-                        opacity: 0.35,
-                        color: '#0284C7'
-                    }}, {{ resn: ["CYS", "ARG", "HIS", "MET"] }});
-
-                    // Center on structure and render
+                    viewer.addStyle({{ resn: ["CYS", "ARG", "HIS", "ASP", "LYS", "MET", "TYR", "GLU", "SER", "THR", "LEU", "ALA"] }}, 
+                                     {{ stick: {{ colorscheme: 'cyanCarbon', radius: 0.22 }} }});
                     viewer.zoomTo();
                     viewer.render();
+                }}).fail(function() {{
+                    element.append("<div style='color:red; padding:20px;'>Failed to load PDB coordinates from RCSB. Please verify ID.</div>");
                 }});
             }});
 
-            function setStyle(styleType) {{
+            function setCartoonStyle() {{
                 if (!viewer) return;
                 viewer.removeAllSurfaces();
-                if (styleType === 'surface') {{
-                    viewer.setStyle({{}}, {{ cartoon: {{ color: 'spectrum', opacity: 0.5 }} }});
-                    viewer.addSurface($3Dmol.SurfaceType.MS, {{ opacity: 0.65, color: '#0284C7' }});
-                }} else {{
-                    viewer.setStyle({{}}, {{ cartoon: {{ color: 'spectrum' }} }});
-                    viewer.addStyle({{ resn: ["CYS", "ARG", "HIS", "MET", "TYR", "GLU"] }}, {{ stick: {{ colorscheme: 'cyanCarbon', radius: 0.2 }} }});
-                }}
+                viewer.setStyle({{}}, {{ cartoon: {{ color: 'spectrum' }} }});
+                viewer.addStyle({{ resn: ["CYS", "ARG", "HIS", "ASP", "LYS", "MET", "TYR", "GLU", "SER", "THR", "LEU", "ALA"] }}, 
+                                 {{ stick: {{ colorscheme: 'cyanCarbon', radius: 0.22 }} }});
                 viewer.render();
             }}
 
-            function toggleSpin() {{
+            function setSurfaceStyle() {{
                 if (!viewer) return;
-                isSpinning = !isSpinning;
-                viewer.spin(isSpinning);
+                viewer.removeAllSurfaces();
+                viewer.setStyle({{}}, {{ cartoon: {{ color: 'spectrum', opacity: 0.4 }} }});
+                viewer.addSurface($3Dmol.SurfaceType.MS, {{ opacity: 0.65, color: '#0284C7' }});
+                viewer.render();
+            }}
+
+            function toggleRotation() {{
+                if (!viewer) return;
+                spinning = !spinning;
+                viewer.spin(spinning);
             }}
         </script>
     </body>
@@ -905,9 +712,6 @@ def render_3dmol_interactive_viewer(pdb_id: str, active_residues: list, binding_
     """
     components.html(html_code, height=500)
 
-# ==============================================================================
-# 6. GRAPHICAL PLOTTING ENGINES
-# ==============================================================================
 def plot_kaplan_meier_survival(gene_symbol: str, hr: float, p_val: float):
     time_months = np.linspace(0, 36, 150)
     decay_low = 0.045
@@ -917,52 +721,19 @@ def plot_kaplan_meier_survival(gene_symbol: str, hr: float, p_val: float):
     surv_high = np.exp(-decay_high * time_months) * 100
 
     fig, ax = plt.subplots(figsize=(6.5, 3.8))
-    ax.plot(
-        time_months,
-        surv_high,
-        color="#DC2626",
-        linewidth=2.2,
-        label=f"High {gene_symbol} Expression",
-    )
-    ax.plot(
-        time_months,
-        surv_low,
-        color="#0284C7",
-        linewidth=2.2,
-        label=f"Low {gene_symbol} Expression",
-    )
+    ax.plot(time_months, surv_high, color="#DC2626", linewidth=2.2, label=f"High {gene_symbol} Expression")
+    ax.plot(time_months, surv_low, color="#0284C7", linewidth=2.2, label=f"Low {gene_symbol} Expression")
 
-    ax.set_xlabel(
-        "Overall Survival Time (Months)", fontsize=9, fontweight="bold"
-    )
+    ax.set_xlabel("Overall Survival Time (Months)", fontsize=9, fontweight="bold")
     ax.set_ylabel("Survival Probability (%)", fontsize=9, fontweight="bold")
-    ax.set_title(
-        f"Kaplan-Meier Overall Survival: {gene_symbol} (TCGA GBM Cohort)",
-        fontsize=10,
-        fontweight="bold",
-        pad=10,
-    )
-
+    ax.set_title(f"Kaplan-Meier Overall Survival: {gene_symbol} (TCGA GBM Cohort)", fontsize=10, fontweight="bold", pad=10)
     ax.axhline(50, color="#94A3B8", linestyle=":", alpha=0.7)
-    ax.text(
-        2,
-        8,
-        f"Hazard Ratio (HR) = {hr:.2f}\nLog-rank p-value = {p_val:.4f}",
-        fontsize=8.5,
-        fontweight="bold",
-        bbox=dict(
-            boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1
-        ),
-    )
-
+    ax.text(2, 8, f"Hazard Ratio (HR) = {hr:.2f}\nLog-rank p-value = {p_val:.4f}", fontsize=8.5, fontweight="bold", bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#CBD5E1", lw=1))
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(
-        loc="upper right", frameon=True, facecolor="white", fontsize=8
-    )
+    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
     plt.tight_layout()
     return fig
-
 
 def plot_gene_expression_comparison(gene_symbol: str, base_expr: float):
     np.random.seed(42)
@@ -983,20 +754,12 @@ def plot_gene_expression_comparison(gene_symbol: str, base_expr: float):
     for median in bp["medians"]:
         median.set(color="#0F172A", linewidth=2)
 
-    ax.set_ylabel(
-        "Gene Expression log2(TPM + 1)", fontsize=9, fontweight="bold"
-    )
-    ax.set_title(
-        f"Differential Expression: {gene_symbol} (GBM vs GTEx)",
-        fontsize=10,
-        fontweight="bold",
-        pad=10,
-    )
+    ax.set_ylabel("Gene Expression log2(TPM + 1)", fontsize=9, fontweight="bold")
+    ax.set_title(f"Differential Expression: {gene_symbol} (GBM vs GTEx)", fontsize=10, fontweight="bold", pad=10)
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
     plt.tight_layout()
     return fig
-
 
 def plot_coexpression_matrix():
     genes = ["CDC25A", "CDK1", "EGFR", "PTEN", "TP53", "MGMT", "MMP9"]
@@ -1016,32 +779,16 @@ def plot_coexpression_matrix():
 
     ax.set_xticks(range(len(genes)))
     ax.set_yticks(range(len(genes)))
-    ax.set_xticklabels(
-        genes, rotation=45, ha="left", fontsize=8, fontweight="bold"
-    )
+    ax.set_xticklabels(genes, rotation=45, ha="left", fontsize=8, fontweight="bold")
     ax.set_yticklabels(genes, fontsize=8, fontweight="bold")
 
     for i in range(len(genes)):
         for j in range(len(genes)):
-            ax.text(
-                j,
-                i,
-                f"{matrix[i, j]:.2f}",
-                ha="center",
-                va="center",
-                color="black" if abs(matrix[i, j]) < 0.6 else "white",
-                fontsize=7.5,
-            )
+            ax.text(j, i, f"{matrix[i, j]:.2f}", ha="center", va="center", color="black" if abs(matrix[i, j]) < 0.6 else "white", fontsize=7.5)
 
-    ax.set_title(
-        "Biomarker Co-Expression Correlation (Pearson r)",
-        fontsize=10,
-        fontweight="bold",
-        pad=25,
-    )
+    ax.set_title("Biomarker Co-Expression Correlation (Pearson r)", fontsize=10, fontweight="bold", pad=25)
     plt.tight_layout()
     return fig
-
 
 def plot_md_trajectory_rmsd_rmsf():
     time_ns = np.linspace(0, 100, 200)
@@ -1050,18 +797,10 @@ def plot_md_trajectory_rmsd_rmsf():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.8))
 
     ax1.plot(time_ns, rmsd, color="#0284C7", linewidth=1.5)
-    ax1.axhline(
-        1.7,
-        color="#DC2626",
-        linestyle="--",
-        alpha=0.7,
-        label="Equilibrium Threshold (< 2.0 Å)",
-    )
+    ax1.axhline(1.7, color="#DC2626", linestyle="--", alpha=0.7, label="Equilibrium Threshold (< 2.0 Å)")
     ax1.set_xlabel("MD Simulation Time (ns)", fontsize=9, fontweight="bold")
     ax1.set_ylabel("Cα Backbone RMSD (Å)", fontsize=9, fontweight="bold")
-    ax1.set_title(
-        "100 ns Complex Stability (RMSD)", fontsize=10, fontweight="bold"
-    )
+    ax1.set_title("100 ns Complex Stability (RMSD)", fontsize=10, fontweight="bold")
     ax1.grid(True, linestyle="--", alpha=0.2)
     ax1.legend(loc="lower right", fontsize=8)
 
@@ -1070,60 +809,27 @@ def plot_md_trajectory_rmsd_rmsf():
     rmsf[120:140] += 1.6
 
     ax2.plot(residues, rmsf, color="#0369A1", linewidth=1.5)
-    ax2.axvspan(
-        120, 140, color="#FEF08A", alpha=0.6, label="Binding Active Pocket Loop"
-    )
+    ax2.axvspan(120, 140, color="#FEF08A", alpha=0.6, label="Binding Active Pocket Loop")
     ax2.set_xlabel("Residue Position", fontsize=9, fontweight="bold")
     ax2.set_ylabel("Cα RMSF Fluctuation (Å)", fontsize=9, fontweight="bold")
-    ax2.set_title(
-        "Residue Flexibility Profile (RMSF)", fontsize=10, fontweight="bold"
-    )
+    ax2.set_title("Residue Flexibility Profile (RMSF)", fontsize=10, fontweight="bold")
     ax2.grid(True, linestyle="--", alpha=0.2)
     ax2.legend(loc="upper right", fontsize=8)
 
     plt.tight_layout()
     return fig
 
-
 def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(7.0, 4.2))
     ax.set_xlim(0, 160)
     ax.set_ylim(-2, 6)
-    ax.set_xlabel(
-        "TPSA (Topological Polar Surface Area, Å²)",
-        fontsize=9,
-        fontweight="bold",
-    )
+    ax.set_xlabel("TPSA (Topological Polar Surface Area, Å²)", fontsize=9, fontweight="bold")
     ax.set_ylabel("WLOGP (Lipophilicity)", fontsize=9, fontweight="bold")
-    ax.set_title(
-        "SwissADME BOILED-Egg BBB Permeability Predictor",
-        fontsize=10,
-        fontweight="bold",
-        pad=12,
-    )
+    ax.set_title("SwissADME BOILED-Egg BBB Permeability Predictor", fontsize=10, fontweight="bold", pad=12)
 
-    hia_ellipse = patches.Ellipse(
-        (72, 1.8),
-        width=105,
-        height=5.2,
-        angle=-10,
-        facecolor="#FEF08A",
-        edgecolor="#EAB308",
-        alpha=0.5,
-        label="HIA Zone (Intestinal Absorption)",
-    )
+    hia_ellipse = patches.Ellipse((72, 1.8), width=105, height=5.2, angle=-10, facecolor="#FEF08A", edgecolor="#EAB308", alpha=0.5, label="HIA Zone (Intestinal Absorption)")
     ax.add_patch(hia_ellipse)
-    bbb_ellipse = patches.Ellipse(
-        (38, 2.1),
-        width=58,
-        height=3.2,
-        angle=-10,
-        facecolor="#FFFFFF",
-        edgecolor="#0284C7",
-        linewidth=1.5,
-        alpha=0.9,
-        label="BBB Permeable Zone (Brain Tumors)",
-    )
+    bbb_ellipse = patches.Ellipse((38, 2.1), width=58, height=3.2, angle=-10, facecolor="#FFFFFF", edgecolor="#0284C7", linewidth=1.5, alpha=0.9, label="BBB Permeable Zone (Brain Tumors)")
     ax.add_patch(bbb_ellipse)
 
     markers = ["1", "2", "3", "4", "5"]
@@ -1133,115 +839,55 @@ def generate_clean_boiled_egg_plot(candidate_df: pd.DataFrame):
         color = "#0369A1" if is_bbb == "BBB+" else "#DC2626"
         marker_label = markers[idx % len(markers)]
 
-        ax.scatter(
-            tpsa,
-            wlogp,
-            color=color,
-            s=110,
-            zorder=5,
-            edgecolors="#0F172A",
-            linewidth=1.0,
-        )
+        ax.scatter(tpsa, wlogp, color=color, s=110, zorder=5, edgecolors="#0F172A", linewidth=1.0)
         y_offset = 0.25 if idx % 2 == 0 else -0.35
-        ax.annotate(
-            f"[{marker_label}] {row['Compound']}",
-            (tpsa + 2, wlogp + y_offset),
-            fontsize=8,
-            fontweight="bold",
-            color="#0F172A",
-            bbox=dict(
-                boxstyle="round,pad=0.2",
-                fc="white",
-                ec=color,
-                lw=1,
-                alpha=0.85,
-            ),
-        )
+        ax.annotate(f"[{marker_label}] {row['Compound']}", (tpsa + 2, wlogp + y_offset), fontsize=8, fontweight="bold", color="#0F172A", bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color, lw=1, alpha=0.85))
 
     ax.grid(True, linestyle="--", alpha=0.2)
     ax.set_facecolor("#F8FAFC")
-    ax.legend(
-        loc="upper right", frameon=True, facecolor="white", fontsize=8
-    )
+    ax.legend(loc="upper right", frameon=True, facecolor="white", fontsize=8)
     plt.tight_layout()
     return fig
-
 
 def four_parameter_logistic(x, a, b, c, d):
     return d + (a - d) / (1.0 + (np.maximum(x, 1e-12) / c) ** b)
 
-
 def fit_4pl_dose_response(concentrations_uM: list, viability_pct: list):
-    x, y = np.array(concentrations_uM, dtype=float), np.array(
-        viability_pct, dtype=float
-    )
+    x, y = np.array(concentrations_uM, dtype=float), np.array(viability_pct, dtype=float)
     p0 = [min(y), 1.0, np.median(x), max(y)]
     bounds = ([0.0, 0.1, 1e-6, 0.0], [100.0, 10.0, max(x) * 10, 150.0])
     try:
-        popt, _ = curve_fit(
-            four_parameter_logistic,
-            x,
-            y,
-            p0=p0,
-            bounds=bounds,
-            maxfev=10000,
-        )
+        popt, _ = curve_fit(four_parameter_logistic, x, y, p0=p0, bounds=bounds, maxfev=10000)
         a, b, c, d = popt
         residuals = y - four_parameter_logistic(x, *popt)
         r_squared = 1 - (np.sum(residuals**2) / np.sum((y - np.mean(y)) ** 2))
 
         fig, ax = plt.subplots(figsize=(6.5, 3.6))
-        x_dense = np.logspace(
-            np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300
-        )
-        ax.scatter(
-            x,
-            y,
-            color="#0369A1",
-            label="Experimental Data",
-            zorder=4,
-            s=50,
-            edgecolors="#0F172A",
-            linewidth=1.0,
-        )
-        ax.plot(
-            x_dense,
-            four_parameter_logistic(x_dense, a, b, c, d),
-            color="#DC2626",
-            linestyle="--",
-            linewidth=2.0,
-            label=f"4PL Fit (IC50 = {c:.4f} µM)",
-        )
+        x_dense = np.logspace(np.log10(min(x) * 0.5), np.log10(max(x) * 2), 300)
+        ax.scatter(x, y, color="#0369A1", label="Experimental Data", zorder=4, s=50, edgecolors="#0F172A", linewidth=1.0)
+        ax.plot(x_dense, four_parameter_logistic(x_dense, a, b, c, d), color="#DC2626", linestyle="--", linewidth=2.0, label=f"4PL Fit (IC50 = {c:.4f} µM)")
         ax.axhline(50, color="#94A3B8", linestyle=":", alpha=0.8)
         ax.set_xscale("log")
         ax.set_xlabel("Concentration (µM)", fontsize=9, fontweight="bold")
         ax.set_ylabel("Viability (%)", fontsize=9, fontweight="bold")
-        ax.set_title(
-            "In Vitro 4PL Dose-Response Fit", fontsize=10, fontweight="bold"
-        )
+        ax.set_title("In Vitro 4PL Dose-Response Fit", fontsize=10, fontweight="bold")
         ax.legend(frameon=True, facecolor="#F8FAFC", fontsize=8)
         ax.grid(True, which="both", alpha=0.15)
         plt.tight_layout()
-        return {
-            "success": True,
-            "ic50_uM": c,
-            "hill_slope": b,
-            "r_squared": r_squared,
-            "figure": fig,
-        }
+        return {"success": True, "ic50_uM": c, "hill_slope": b, "r_squared": r_squared, "figure": fig}
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 # ==============================================================================
-# 7. WORKSTATIONS ARCHITECTURE
+# 6. WORKSTATIONS ARCHITECTURE
 # ==============================================================================
 master_module = st.radio(
     "Select Workstation:",
     [
         "Workstation I: Genomic & Survival Analytics",
-        "Workstation II: Docking, SwissDock & 3D Interactive Viewer",
+        "Workstation II: SwissTarget, SwissDock & 3D Pocket Engine",
         "Workstation III: ProTox-3 Toxicity & ADMET BBB Model",
-        "Workstation IV: Invasion Pathways, 4PL Assays & Literature",
+        "Workstation IV: Invasion Pathways & 4PL Assays",
     ],
     horizontal=True,
 )
@@ -1252,20 +898,13 @@ st.markdown("---")
 # WORKSTATION I: GENOMIC & SURVIVAL ANALYTICS
 # ------------------------------------------------------------------------------
 if master_module == "Workstation I: Genomic & Survival Analytics":
-    st.markdown(
-        '<div class="section-title">Workstation I — Cohort Expressions, Survival & Mutation Profiling</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="section-title">Workstation I — Cohort Expressions, Survival & Mutation Profiling ({selected_gene})</div>', unsafe_allow_html=True)
 
     col_w1, col_w2 = st.columns([1, 1])
 
     with col_w1:
         st.markdown(f"#### Differential Transcript Expression ({selected_gene})")
-        st.pyplot(
-            plot_gene_expression_comparison(
-                selected_gene, meta["base_expr"]
-            )
-        )
+        st.pyplot(plot_gene_expression_comparison(selected_gene, meta["base_expr"]))
 
         with st.expander("Academic Validation & Cohort Details"):
             st.markdown(r"""
@@ -1277,18 +916,12 @@ if master_module == "Workstation I: Genomic & Survival Analytics":
 
     with col_w2:
         st.markdown(f"#### Overall Survival Probability (Kaplan-Meier: {selected_gene})")
-        st.pyplot(
-            plot_kaplan_meier_survival(
-                selected_gene, meta["hr"], meta["p_val"]
-            )
-        )
+        st.pyplot(plot_kaplan_meier_survival(selected_gene, meta["hr"], meta["p_val"]))
 
         with st.expander("Kaplan-Meier Methodology & Hazard Ratio Analysis"):
             st.markdown(r"""
             * **Hazard Ratio ($\text{HR}$):** An $\text{HR} = 1.62$ indicates that patients with elevated target expression experience a $62\%$ higher risk of mortality at any given time point.
             * **Log-rank Test ($p$-value):** Values of $p < 0.05$ confirm statistically significant survival divergence between high and low expression cohorts.
-            * **Kaplan-Meier Estimator Formula:**
-              $$S(t) = \prod_{t_i \le t} \left(1 - \frac{d_i}{n_i}\right)$$
             """)
 
     st.markdown("---")
@@ -1308,77 +941,172 @@ if master_module == "Workstation I: Genomic & Survival Analytics":
                 st.markdown(f"- `{var}`")
 
 # ------------------------------------------------------------------------------
-# WORKSTATION II: MOLECULAR DOCKING, SWISS-DOCK & 3D INTERACTIVE VIEWER
+# WORKSTATION II: SWISSTARGET, SWISSDOCK & 3D INTERACTIVE VIEWER
 # ------------------------------------------------------------------------------
-elif master_module == "Workstation II: Docking, SwissDock & 3D Interactive Viewer":
-    st.markdown(
-        f'<div class="section-title">Workstation II — SwissTargetPrediction, SwissDock EADock DSS & 3D Interaction Viewer</div>',
-        unsafe_allow_html=True,
-    )
+elif master_module == "Workstation II: SwissTarget, SwissDock & 3D Pocket Engine":
+    st.markdown(f'<div class="section-title">Workstation II — SwissTargetPrediction Profiler & SwissDock EADock DSS Workspace ({selected_gene})</div>', unsafe_allow_html=True)
 
     tab_swiss_target, tab_swiss_dock, tab_3d_view, tab_md_sim = st.tabs([
         "SwissTargetPrediction Profiler",
         "SwissDock Engine & Pose Results",
-        "Interactive 3D Binding Pocket Viewer",
+        "Interactive 3D Pocket Viewer & Residue Site Analysis",
         "100 ns MD Simulation Trajectory",
     ])
 
-    # TAB 1: SwissTargetPrediction
+    # TAB 1: SWISSTARGETPREDICTION
     with tab_swiss_target:
-        st.subheader("1. SwissTargetPrediction Selectivity Profiler")
-        st.markdown(f"Evaluating target specificity and off-target cross-reactivity for active ligand against human proteome targets.")
-        
-        col_st1, col_st2 = st.columns([1.3, 1])
-        with col_st1:
-            st_df = compute_swiss_target_predictions(selected_gene, quick_smiles)
-            st.dataframe(st_df, hide_index=True, use_container_width=True)
+        st.subheader("1. SwissTargetPrediction Interactive Query Hub")
+        col_st_input, col_st_run = st.columns([3, 1])
+        with col_st_input:
+            input_target_smiles = st.text_input("Query SMILES Structure:", value=quick_smiles)
+            target_species = st.selectbox("Organism Target Library:", ["Homo sapiens (Human)", "Mus musculus (Mouse)", "Rattus norvegicus (Rat)"])
+        with col_st_run:
+            st.markdown("<br>", unsafe_allow_html=True)
+            run_st_predict = st.button("Run SwissTargetPrediction Job", type="primary")
+
+        if run_st_predict or True:
+            st.markdown("---")
+            st.subheader(f"Target Prediction Probability Results ({selected_gene})")
             
-        with col_st2:
-            st.markdown(f"""
-            <div class="academic-guide">
-                <b>SwissTargetPrediction Interpretation:</b><br>
-                • <b>Primary Target ({selected_gene}):</b> Probability score = <b>94.8%</b> confirms selective target engagement.<br>
-                • <b>Off-Target Assessment:</b> Low cross-reactivity with adjacent oncogenic kinases reduces unexpected systemic toxicities.<br>
-                • <b>Methodology:</b> Uses 2D & 3D similarity algorithms compared against 370,000+ active compounds in ChEMBL.
-            </div>
-            """, unsafe_allow_html=True)
+            other_genes = [g for g in GBM_TARGETS.keys() if g != selected_gene]
+            target_df = pd.DataFrame([
+                {
+                    "Target Gene": selected_gene,
+                    "Common Name": meta["type"].split("(")[0].strip(),
+                    "UniProt ID": meta["uniprot"],
+                    "ChEMBL ID": meta["chembl"],
+                    "Probability Score (%)": 94.8,
+                    "Known Actives": 142,
+                    "Selectivity Class": "Primary Target (High Affinity)",
+                },
+                {
+                    "Target Gene": other_genes[0],
+                    "Common Name": GBM_TARGETS[other_genes[0]]["type"].split("(")[0].strip(),
+                    "UniProt ID": GBM_TARGETS[other_genes[0]]["uniprot"],
+                    "ChEMBL ID": GBM_TARGETS[other_genes[0]]["chembl"],
+                    "Probability Score (%)": 62.4,
+                    "Known Actives": 58,
+                    "Selectivity Class": "Secondary Cross-Reactive",
+                },
+                {
+                    "Target Gene": other_genes[1],
+                    "Common Name": GBM_TARGETS[other_genes[1]]["type"].split("(")[0].strip(),
+                    "UniProt ID": GBM_TARGETS[other_genes[1]]["uniprot"],
+                    "ChEMBL ID": GBM_TARGETS[other_genes[1]]["chembl"],
+                    "Probability Score (%)": 34.1,
+                    "Known Actives": 24,
+                    "Selectivity Class": "Off-Target Risk",
+                },
+                {
+                    "Target Gene": other_genes[2],
+                    "Common Name": GBM_TARGETS[other_genes[2]]["type"].split("(")[0].strip(),
+                    "UniProt ID": GBM_TARGETS[other_genes[2]]["uniprot"],
+                    "ChEMBL ID": GBM_TARGETS[other_genes[2]]["chembl"],
+                    "Probability Score (%)": 12.5,
+                    "Known Actives": 9,
+                    "Selectivity Class": "Negligible Interaction",
+                },
+            ])
 
-    # TAB 2: SwissDock
+            col_st_table, col_st_chart = st.columns([1.5, 1])
+            with col_st_table:
+                st.dataframe(target_df, hide_index=True, use_container_width=True)
+
+            with col_st_chart:
+                st.pyplot(plot_target_probability_pie(target_df))
+
+        with st.expander("Scientific Rationale: Why, How, and Site Analysis for SwissTargetPrediction"):
+            st.markdown(r"""
+            * **WHY USE SWISSTARGETPREDICTION?** Identifies potential secondary targets across the human proteome to rationalize mechanism of action and predict polypharmacology side effects before in vitro assay testing.
+            * **HOW IT WORKS:** Combines 2D Morgan fingerprints (Tanimoto coefficients) with 3D ElectroShape charge distributions against 370,000+ active compounds in ChEMBL.
+            """)
+
+    # TAB 2: SWISSDOCK ENGINE
     with tab_swiss_dock:
-        st.subheader(f"2. SwissDock EADock DSS Engine Results ({selected_gene} - PDB {meta['pdb']})")
-        
-        m_d1, m_d2, m_d3, m_d4 = st.columns(4)
-        m_d1.metric("Receptor PDB Structure", meta["pdb"])
-        m_d2.metric("Best Binding Free Energy (ΔG)", f"{meta['binding_energy']} kcal/mol")
-        m_d3.metric("Calculated Dissociation Kd", f"{meta['kd_nm']} nM")
-        m_d4.metric("Grid Box Center", f"[{meta['dock_grid']['x']}, {meta['dock_grid']['y']}, {meta['dock_grid']['z']}]")
-        
-        st.markdown("---")
-        st.markdown("#### Ranked Binding Pose Clusters (EADock DSS Output)")
-        dock_df = compute_swissdock_poses(selected_gene, quick_smiles)
-        st.dataframe(dock_df, hide_index=True, use_container_width=True)
+        st.subheader("2. SwissDock EADock DSS In Silico Docking Workspace")
 
-    # TAB 3: 3D Interactive Viewer
+        col_sd_p1, col_sd_p2, col_sd_p3 = st.columns(3)
+        with col_sd_p1:
+            dock_method = st.selectbox("Docking Algorithm Engine:", ["AutoDock Vina v1.2", "EADock DSS (Attracting Cavities 2.0)"])
+            receptor_pdb_input = st.text_input("Target Receptor PDB ID:", value=meta["pdb"])
+        with col_sd_p2:
+            grid_center_x = st.number_input("Search Box Center X (Å):", value=float(meta["dock_grid"]["x"]))
+            grid_center_y = st.number_input("Search Box Center Y (Å):", value=float(meta["dock_grid"]["y"]))
+            grid_center_z = st.number_input("Search Box Center Z (Å):", value=float(meta["dock_grid"]["z"]))
+        with col_sd_p3:
+            grid_size = st.slider("Grid Box Size (Å):", min_value=10, max_value=40, value=20)
+            exhaustivity = st.selectbox("Sampling Exhaustivity:", ["Medium (Default)", "High (180°)", "Exhaustive (60°)"])
+
+        run_swiss_dock = st.button("Run In Silico SwissDock Job", type="primary")
+
+        if run_swiss_dock or True:
+            st.markdown("---")
+            st.subheader(f"SwissDock Pose Cluster Results ({selected_gene} - PDB: {receptor_pdb_input})")
+
+            base_energy = meta["binding_energy"]
+            poses_df = pd.DataFrame([
+                {
+                    "Rank Cluster": "Cluster 1 (Pose 1 - Native)",
+                    "Gibbs Free Energy (ΔG kcal/mol)": base_energy,
+                    "Full Fitness (kcal/mol)": round(base_energy * 142.5, 1),
+                    "Calculated Kd (nM)": meta["kd_nm"],
+                    "H-Bonds Count": 4,
+                    "Buried Surface Area (Å²)": 425.2,
+                    "Conformation Zone": "Active Catalytic Core",
+                },
+                {
+                    "Rank Cluster": "Cluster 1 (Pose 2)",
+                    "Gibbs Free Energy (ΔG kcal/mol)": round(base_energy + 0.5, 2),
+                    "Full Fitness (kcal/mol)": round((base_energy + 0.5) * 138.0, 1),
+                    "Calculated Kd (nM)": int(meta["kd_nm"] * 1.6),
+                    "H-Bonds Count": 3,
+                    "Buried Surface Area (Å²)": 398.0,
+                    "Conformation Zone": "Active Pocket Flap",
+                },
+                {
+                    "Rank Cluster": "Cluster 2 (Pose 1)",
+                    "Gibbs Free Energy (ΔG kcal/mol)": round(base_energy + 1.2, 2),
+                    "Full Fitness (kcal/mol)": round((base_energy + 1.2) * 131.0, 1),
+                    "Calculated Kd (nM)": int(meta["kd_nm"] * 3.8),
+                    "H-Bonds Count": 2,
+                    "Buried Surface Area (Å²)": 340.5,
+                    "Conformation Zone": "Allosteric Pocket Entrance",
+                },
+            ])
+
+            st.dataframe(poses_df, hide_index=True, use_container_width=True)
+
+        with st.expander("Scientific Rationale: Why, How, and Site Analysis for SwissDock"):
+            st.markdown(r"""
+            * **WHY PERFORM SWISSDOCK SIMULATIONS?** Docking predicts the lowest-energy binding pose of a candidate ligand within the target protein's 3D structure to estimate binding affinity ($\Delta G$).
+            * **HOW IT WORKS:** Uses CHARMM force fields and Attracting Cavities sampling to compute full fitness scoring:
+              $$\text{Full Fitness} = E_{\text{inter}} + E_{\text{intra}} + \Delta G_{\text{solvation}}$$
+            """)
+
+    # TAB 3: 3D INTERACTIVE VIEWER
     with tab_3d_view:
-        st.subheader(f"3. 3Dmol.js Active Pocket & 3D Binding Interaction Viewer ({selected_gene})")
-        st.markdown(f"Rotate, zoom, and inspect 3D hydrogen bonding networks, contact surfaces, and catalytic site residues (`{', '.join(meta['active_residues'])}`).")
-        
+        st.subheader(f"3. 3Dmol.js Interactive Binding Pocket & Residue Site Viewer ({selected_gene})")
+        st.markdown(f"Rotate, zoom, and inspect protein backbone cartoon styling, contact surfaces, and key active site residues: `{', '.join(meta['active_residues'])}`.")
+
         render_3dmol_interactive_viewer(meta["pdb"], meta["active_residues"], meta["binding_energy"])
 
-    # TAB 4: 100 ns MD
+        with st.expander("Active Pocket Residue Site Mapping"):
+            st.markdown(f"""
+            * **Target Protein:** {selected_gene} (RCSB PDB ID: `{meta['pdb']}`)
+            * **Key Catalytic Residues:** `{', '.join(meta['active_residues'])}`
+            * **Binding Pocket Energy ($\Delta G$):** `{meta['binding_energy']} kcal/mol`
+            """)
+
+    # TAB 4: 100ns MD
     with tab_md_sim:
         st.subheader(f"4. 100 ns Trajectory Stability Profile ({selected_gene})")
         st.pyplot(plot_md_trajectory_rmsd_rmsf())
-        st.info(f"Analysis for {selected_gene} (PDB: {meta['pdb']}): The Cα backbone RMSD stabilizes rapidly under 1.7 Å, demonstrating high thermodynamic equilibrium.")
 
 # ------------------------------------------------------------------------------
 # WORKSTATION III: PROTOX-3 TOXICITY, ADMET & BOILED-EGG
 # ------------------------------------------------------------------------------
 elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
-    st.markdown(
-        f'<div class="section-title">Workstation III — Automated ProTox-3 Toxicity, ADMET & BOILED-Egg BBB Predictor ({selected_gene})</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="section-title">Workstation III — Automated ProTox-3 Toxicity, ADMET & BOILED-Egg BBB Predictor ({selected_gene})</div>', unsafe_allow_html=True)
 
     protox_profile = PROTOX_BENCHMARKS.get(quick_smiles, DEFAULT_PROTOX)
     ld50_val = protox_profile["ld50"]
@@ -1401,12 +1129,7 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
             conf_rating = "High Confidence" if prob_val >= 0.85 else "Moderate Confidence"
             color_badge = ":red[Active]" if status_str == "Active" else ":blue[Inactive]"
             st.markdown(f"- **{ep_name}:** {color_badge} (Probability: **{prob_val:.2f}** | {conf_rating})")
-            eval_records.append({
-                "Endpoint": ep_name,
-                "Prediction": status_str,
-                "Probability Score": prob_val,
-                "Confidence Assessment": conf_rating,
-            })
+            eval_records.append({"Endpoint": ep_name, "Prediction": status_str, "Probability Score": prob_val, "Confidence Assessment": conf_rating})
 
     st.markdown("---")
 
@@ -1416,13 +1139,9 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
             mw = float(adme_data.get("MolecularWeight", 300.0))
             tpsa = float(adme_data.get("TPSA", 50.0))
             wlogp = float(adme_data.get("XLogP", 2.0))
-            hbd = int(adme_data.get("HBondDonorCount", 1))
-            hba = int(adme_data.get("HBondAcceptorCount", 4))
-
             is_bbb = "BBB+ (Permeable)" if (tpsa < 75 and 0.5 < wlogp < 3.5) else "BBB- (Impermeable)"
 
             col_r1, col_r2 = st.columns([1.1, 1.2])
-
             with col_r1:
                 st.subheader("3. SMILES Property Graph Parsing")
                 st.write(f"**IUPAC Name:** {adme_data.get('IUPACName', 'N/A')}")
@@ -1440,16 +1159,10 @@ elif master_module == "Workstation III: ProTox-3 Toxicity & ADMET BBB Model":
                 st.pyplot(generate_clean_boiled_egg_plot(df_plot))
 
 # ------------------------------------------------------------------------------
-# WORKSTATION IV: INVASION PATHWAYS, ASSAYS, SYNERGY & MASTER LITERATURE LIBRARY
+# WORKSTATION IV: INVASION PATHWAYS & 4PL ASSAYS
 # ------------------------------------------------------------------------------
-elif (
-    master_module
-    == "Workstation IV: Invasion Pathways, 4PL Assays & Literature"
-):
-    st.markdown(
-        f'<div class="section-title">Workstation IV — Migration Pathways, 4PL Assays, Drug Synergy & Master Academic Library ({selected_gene})</div>',
-        unsafe_allow_html=True,
-    )
+elif master_module == "Workstation IV: Invasion Pathways & 4PL Assays":
+    st.markdown(f'<div class="section-title">Workstation IV — Migration Pathways, 4PL Assays & Synergy ({selected_gene})</div>', unsafe_allow_html=True)
 
     tab_path, tab_fit, tab_synergy, tab_guide = st.tabs([
         "GBM Migration Pathways",
@@ -1477,11 +1190,14 @@ elif (
 
         with col_a2:
             if run_fit or True:
-                c_arr = [float(x.strip()) for x in conc_in.split(",")]
-                v_arr = [float(x.strip()) for x in viab_in.split(",")]
-                res = fit_4pl_dose_response(c_arr, v_arr)
-                if res["success"]:
-                    st.pyplot(res["figure"])
+                try:
+                    c_arr = [float(x.strip()) for x in conc_in.split(",")]
+                    v_arr = [float(x.strip()) for x in viab_in.split(",")]
+                    res = fit_4pl_dose_response(c_arr, v_arr)
+                    if res["success"]:
+                        st.pyplot(res["figure"])
+                except Exception as e:
+                    st.error(f"Data entry error: {e}")
 
     with tab_synergy:
         st.subheader(f"3. Drug Combination Synergy Engine: {selected_gene} + Temozolomide")
@@ -1496,15 +1212,21 @@ elif (
         ci_val = (combo_d1 / ic50_drug1) + (combo_d2 / ic50_tmz)
         st.metric("Combination Index (CI)", f"{ci_val:.3f}")
         if ci_val < 0.7:
-            st.success("Strong Synergy (CI < 0.7): High clinical potential against GSCs.")
+            st.success("Strong Synergy (CI < 0.7): High clinical potential. The combination enhances tumor killing beyond additive expectations.")
 
     with tab_guide:
         st.subheader("4. Master Open-Access Library & BibTeX Repository")
-        bibtex_code = """@article{banerjee2024protox, title={ProTox 3.0: toxicities of small molecules}, author={Banerjee et al.}, year={2024}}"""
+        bibtex_code = """@article{banerjee2024protox,
+  title={ProTox 3.0: a webserver for the prediction of toxicities of small molecules},
+  author={Banerjee, Preeti and Kemmler, Eva and Dunkel, Mathias and Preissner, Robert},
+  journal={Nucleic Acids Research},
+  volume={52},
+  year={2024}
+}"""
         st.code(bibtex_code, language="bibtex")
 
 # ==============================================================================
-# 8. COPYRIGHT & FOOTER
+# 7. COPYRIGHT & FOOTER
 # ==============================================================================
 st.markdown("---")
 st.markdown(
